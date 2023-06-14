@@ -346,7 +346,6 @@ class AsynchronousConsumer(object):
         self.on_message_callback(basic_deliver, properties, body)
         self.acknowledge_message(basic_deliver.delivery_tag)
 
-
     def acknowledge_message(self, delivery_tag):
         """Acknowledge the message delivery from RabbitMQ by sending a
         Basic.Ack RPC method for the delivery tag.
@@ -470,7 +469,21 @@ class ReconnectingAsyncConsumer(object):
         return self._reconnect_delay
 
 
-class BlockedConsumer(object):
+class BlockedMixin:
+
+    def _declare_queue(self, channel):
+        channel.queue_declare(self._queue, durable=True)
+
+    def _declare_exchanges(self, channel):
+        for exchange in self._exchanges:
+            channel.exchange_declare(exchange.name, exchange_type=exchange.type)
+
+    def _declare_binds(self, channel):
+        for bind in self._binds:
+            channel.queue_bind(self._queue, bind.exchange, routing_key=bind.routing_key)
+
+
+class BlockedConsumer(BlockedMixin):
 
     def __init__(self,
                  broker_url=None,
@@ -484,17 +497,6 @@ class BlockedConsumer(object):
         self._exchanges = exchanges
         self._binds = binds
         self._on_message_callback = on_message_callback
-
-    def _declare_queue(self, channel):
-        channel.queue_declare(self._queue, durable=True)
-
-    def _declare_exchanges(self, channel):
-        for exchange in self._exchanges:
-            channel.exchange_declare(exchange.name, exchange_type=exchange.type)
-
-    def _declare_binds(self, channel):
-        for bind in self._binds:
-            channel.queue_bind(self._queue, bind.exchange, routing_key=bind.routing_key)
 
     def on_message(self, channel, method_frame, header_frame, body):
         self._on_message_callback(method_frame, header_frame, body)
@@ -532,3 +534,58 @@ class BlockedConsumer(object):
             except pika.exceptions.AMQPConnectionError:
                 print("Connection was closed, retrying...")
                 continue
+
+
+class BlockedPublisher(BlockedMixin):
+
+    def __init__(self,
+                 broker_url=None,
+                 exchanges=None,
+                 **kwargs):
+        self._broker_url = broker_url
+        self._exchanges = exchanges
+        self._connection = None
+        self._channel = None
+
+    def _publish(self,
+                exchange,
+                routing_key,
+                body,
+                properties=None):
+
+            if not self._connection:
+                print("Connecting...")
+                self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
+            if not self._channel:
+                self._channel = self._connection.channel()
+
+            self._channel.confirm_delivery()
+
+            self._declare_exchanges(self._channel)
+
+            return self._channel.basic_publish(exchange, routing_key, body, properties=properties, mandatory=True)
+
+    def publish(self, *args, **kwargs):
+        try:
+            self._publish(*args, **kwargs)
+        except pika.exceptions.ConnectionClosedByBroker:
+            # Uncomment this to make the example not attempt recovery
+            # from server-initiated connection closure, including
+            # when the node is stopped cleanly
+            #
+            # break
+
+            self._retry_publish(*args, **kwargs)
+        # Do not recover on channel errors
+        except pika.exceptions.AMQPChannelError as err:
+            print("Caught a channel error: {}, stopping...".format(err))
+            raise err
+        # Recover on all other connection errors
+        except pika.exceptions.AMQPConnectionError:
+            print("Connection was closed, retrying...")
+            self._retry_publish(*args, **kwargs)
+
+    def _retry_publish(self, *args, **kwargs):
+        self._connection = None
+        self._channel = None
+        self._publish(*args, **kwargs)
