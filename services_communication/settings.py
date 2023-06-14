@@ -14,7 +14,7 @@ DEFAULT = {
     'BINDS': [
     ],  # The AMQP binds for consumer. String or tuple of exchange name and routing keys'
     'CONSUMER_CLASS': 'services_communication.broker.BlockedConsumer',
-    'MESSAGE_CONSUMER': 'services_communication.app_services_consumer.consumer.message_router'
+    'MESSAGE_CONSUMER': 'services_communication.consumer.message_router'
     # Callback func(basic_deliver, properties, body)
 }
 

@@ -4,7 +4,7 @@ Pub/Sub for service on django
 Installation
 -----------------
 ```commandline
-pip install 
+ pip install git+https://github.com/ksinn/django-microservices-communication
 ```
 
 Consuming

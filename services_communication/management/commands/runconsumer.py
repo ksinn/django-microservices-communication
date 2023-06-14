@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.WARNING)
 
 
 class Command(BaseCommand):
-    help = "Closes the specified poll for voting"
+    help = "Run consumer"
 
     def handle(self, *args, **options):
             self.stdout.write(
