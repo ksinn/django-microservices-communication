@@ -10,11 +10,11 @@ Installation
 Consuming
 ----------------
 
-Add 'services_communication.app_services_consumer' to your INSTALLED_APPS setting.
+Add 'services_communication' to your INSTALLED_APPS setting.
 ```python
 INSTALLED_APPS = [
     ...
-    'services_communication.app_services_consumer',
+    'services_communication',
 ]
 ```
 
@@ -62,7 +62,7 @@ Every consumer function must be registered in message router.
 
 Example  consumers.py file:
 ```
-from services_communication.app_services_consumer.consumer import message_router
+from services_communication.consumer import message_router
 
 @message_router.consumer('my_exchange1', 'event.update')
 @message_router.consumer('my_exchange1', 'event.create')
