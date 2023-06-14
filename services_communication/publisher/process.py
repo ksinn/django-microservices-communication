@@ -1,3 +1,5 @@
+﻿import json
+
 import pika
 
 from services_communication.broker import BlockedPublisher
@@ -13,14 +15,14 @@ def run_publisher():
             publisher.publish(
                 exchange=event.exchange,
                 routing_key=event.routing_key,
-                body={
+                body=json.dumps({
                     'eventId': event.id,
                     'eventTime': event.event_time.isoformat(),
                     'eventType': event.event_type,
                     'aggregate': event.aggregate,
                     'payload': event.payload,
 
-                },
+                }),
                 properties=pika.BasicProperties(content_type='text/json',
                                                 delivery_mode=pika.DeliveryMode.Persistent)
             )

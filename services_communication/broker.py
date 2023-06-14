@@ -559,11 +559,9 @@ class BlockedPublisher(BlockedMixin):
             if not self._channel:
                 self._channel = self._connection.channel()
 
-            self._channel.confirm_delivery()
-
             self._declare_exchanges(self._channel)
 
-            return self._channel.basic_publish(exchange, routing_key, body, properties=properties, mandatory=True)
+            return self._channel.basic_publish(exchange, routing_key, body, properties=properties)
 
     def publish(self, *args, **kwargs):
         try:
