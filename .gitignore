@@ -17,3 +17,4 @@ jwt.key.pub
 */jwt.key.pub
 
 .project
+build
