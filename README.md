@@ -7,9 +7,6 @@ Installation
  pip install git+https://github.com/ksinn/django-microservices-communication
 ```
 
-Consuming
-----------------
-
 Add 'services_communication' to your INSTALLED_APPS setting.
 ```python
 INSTALLED_APPS = [
@@ -34,6 +31,9 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
 }
 ```
 
+
+Consuming
+----------------
 Write logical consuming function in file 'consumers.py' in django app
 ```
 some_project/
@@ -74,4 +74,43 @@ def stupid_consume_function(routing_key, body):
 Run consumer
 ```commandline
 python manage.py runconsumer
+```
+
+Publishing
+--------------
+
+*Publishing in transaction*
+For publish event happened with [aggregate](https://microservices.io/patterns/data/aggregate.html) in transaction use publish_aggregate_event
+```python
+from services_communication.publisher import publish_aggregate_event
+
+def update_user_name(user, new_name):
+    user.name = new_name
+    user.save()
+    publish_aggregate_event(
+                aggregate='user',
+                event_type='update.base',
+                payload=build_user_data(user),
+            )
+```
+
+This function save event data in db table. 
+Then publisher process will read the event from the table and publish it to the broker in _exchange_ same as aggregate name with _routing key_ same as event type,
+                event_type and body:
+```json
+{
+    "eventId": "2",
+    "eventTime": "2023-06-02T10:58:58.340174Z",
+    "eventType": "update.base",
+    "aggregate": "user",
+    "payload": {
+      ...
+    },
+}
+```
+
+
+Run publisher process
+```commandline
+python manage.py runpublisher
 ```
