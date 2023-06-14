@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from services_communication.app_services_consumer.process import run_consumer
+from services_communication.consumer.process import run_consumer
 
 import logging
 logging.basicConfig(level=logging.WARNING)
