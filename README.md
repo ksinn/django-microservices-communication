@@ -7,6 +7,18 @@ Installation
  pip install git+https://github.com/ksinn/django-microservices-communication
 ```
 
+In _requirements.txt_ file
+```python
+...
+Django==4.2
+git+https://github.com/ksinn/django-microservices-communication
+django-cors-headers==3.14.0
+...
+```
+*Installation in Docker*
+If pip install execute in docker, you require git in image.
+
+
 Add 'services_communication' to your INSTALLED_APPS setting.
 ```python
 INSTALLED_APPS = [
