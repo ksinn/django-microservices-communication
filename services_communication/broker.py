@@ -548,20 +548,21 @@ class BlockedPublisher(BlockedMixin):
         self._channel = None
 
     def _publish(self,
-                exchange,
-                routing_key,
-                body,
-                properties=None):
+                 exchange,
+                 routing_key,
+                 body):
 
-            if not self._connection:
-                print("Connecting...")
-                self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
-            if not self._channel:
-                self._channel = self._connection.channel()
+        if not self._connection:
+            print("Connecting...")
+            self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
+        if not self._channel:
+            self._channel = self._connection.channel()
 
-            self._declare_exchanges(self._channel)
+        self._declare_exchanges(self._channel)
 
-            return self._channel.basic_publish(exchange, routing_key, body, properties=properties)
+        return self._channel.basic_publish(exchange, routing_key, body,
+                                           properties=pika.BasicProperties(content_type='text/json',
+                                                                           delivery_mode=pika.DeliveryMode.Persistent))
 
     def publish(self, *args, **kwargs):
         try:

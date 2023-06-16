@@ -2,9 +2,8 @@
 
 import pika
 
-from services_communication.broker import BlockedPublisher
 from services_communication.models import PublishedEventQueue
-from services_communication.settings import communication_settings
+from services_communication.publisher.utils import build_publisher_by_settings
 
 
 def run_publisher():
@@ -23,17 +22,12 @@ def run_publisher():
                     'payload': event.payload,
 
                 }),
-                properties=pika.BasicProperties(content_type='text/json',
-                                                delivery_mode=pika.DeliveryMode.Persistent)
             )
             event.delete()
 
 
 def _get_publisher():
-    return BlockedPublisher(
-        broker_url=communication_settings.BROKER_CONNECTION_URL,
-        exchanges=communication_settings.EXCHANGES,
-    )
+    return build_publisher_by_settings()
 
 
 def _check_publisher_settings():
