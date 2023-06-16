@@ -27,14 +27,16 @@ INSTALLED_APPS = [
 ]
 ```
 
-Any global settings are kept in a single configuration dictionary named MICROSERVICES_COMMUNICATION_SETTINGS. Start off by adding the following to your settings.py module:
+Any global settings are kept in a single configuration dictionary named MICROSERVICES_COMMUNICATION_SETTINGS. 
+Start off by adding the following to your settings.py module:
 ```python
 MICROSERVICES_COMMUNICATION_SETTINGS = {
     'BROKER_CONNECTION_URL': 'amqp://guest:guest@localhost:5672',
     'QUEUE': 'my_queue',
     'EXCHANGES': [
         'my_exchange1',
-        ('my_other_exchange', 'topic'),
+        ('my_other_exchange', 'fanout'),
+        'exchange3',
     ],
     'BINDS': [
         ('my_exchange1', 'event.*'),
@@ -42,7 +44,9 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
     ],
 }
 ```
-
+Defaults:
+- exchange type - *topic*
+- bind routing key - *''*
 
 Consuming
 ----------------
@@ -78,7 +82,7 @@ from services_communication.consumer import message_router
 
 @message_router.consumer('my_exchange1', 'event.update')
 @message_router.consumer('my_exchange1', 'event.create')
-@message_router.consumer('my_exchange2')  # For get all routing keys
+@message_router.consumer('my_other_exchange')  # For get all routing keys
 def stupid_consume_function(routing_key, body):
     print(routing_key, body)
 ```
