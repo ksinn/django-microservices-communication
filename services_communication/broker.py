@@ -559,8 +559,7 @@ class BlockedPublisher(BlockedMixin):
             self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
         if not self._channel:
             self._channel = self._connection.channel()
-
-        self._channel.confirm_delivery()
+            self._channel.confirm_delivery()
 
         self._declare_exchanges(self._channel)
 
