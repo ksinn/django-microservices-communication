@@ -1,1 +1,1 @@
-from command import send_command
+from .command import send_command
