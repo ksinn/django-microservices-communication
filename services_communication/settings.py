@@ -47,7 +47,7 @@ class Settings:
 
     def build_bind(self, bind_settings):
         if isinstance(bind_settings, str):
-            return Bind(exchange=bind_settings, routing_key='')
+            return Bind(exchange=bind_settings, routing_key='#')
         if (isinstance(bind_settings, list) or isinstance(bind_settings, tuple)) and len(bind_settings) == 2:
             return Bind(exchange=bind_settings[0], routing_key=bind_settings[1])
         raise Exception(

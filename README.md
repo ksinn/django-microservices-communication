@@ -46,7 +46,7 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
 ```
 Defaults:
 - exchange type - _topic_
-- bind routing key - _''_
+- bind routing key - _'#'_
 
 Consuming
 ----------------
