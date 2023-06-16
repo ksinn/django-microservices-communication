@@ -61,7 +61,7 @@ class Settings:
             return Exchange(name=exchange_settings, type=ExchangeType.topic)
         if (isinstance(exchange_settings, list) or isinstance(exchange_settings, tuple)) and len(
                 exchange_settings) == 2:
-            return Exchange(name=exchange_settings[0], type=[1])
+            return Exchange(name=exchange_settings[0], type=exchange_settings[1])
         raise Exception(
             "MICROSERVICES_COMMUNICATION_SETTINGS.EXCHANGES "
             "element mast by str with name "

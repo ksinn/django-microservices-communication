@@ -45,8 +45,8 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
 }
 ```
 Defaults:
-- exchange type - *topic*
-- bind routing key - *''*
+- exchange type - _topic_
+- bind routing key - _''_
 
 Consuming
 ----------------
@@ -130,3 +130,23 @@ Run publisher process
 ```commandline
 python manage.py runpublisher
 ```
+
+Commands
+--------------
+A command is a way of telling remote service to do something without waiting for a response from it.
+
+For send command immediately, without regard to transactionality, use _send_command_ with service name and payloads as arguments.
+
+```python
+from services_communication.call import send_command
+
+send_command(
+    'sms',
+    {
+        'phone': '998990000000',
+        'text': 'Hello world!',
+    }
+)
+```
+
+If remote service has any commands, you may want to use optional argument _command_name_.
