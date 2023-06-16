@@ -34,11 +34,11 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
     'QUEUE': 'my_queue',
     'EXCHANGES': [
         'my_exchange1',
-        ('my_exchange1', 'topic'),
+        ('my_other_exchange', 'topic'),
     ],
     'BINDS': [
         ('my_exchange1', 'event.*'),
-        'my_exchange2',
+        'my_other_exchange',
     ],
 }
 ```
@@ -78,7 +78,7 @@ from services_communication.consumer import message_router
 
 @message_router.consumer('my_exchange1', 'event.update')
 @message_router.consumer('my_exchange1', 'event.create')
-@message_router.consumer('my_exchange2')  // For get all routing keys
+@message_router.consumer('my_exchange2')  # For get all routing keys
 def stupid_consume_function(routing_key, body):
     print(routing_key, body)
 ```

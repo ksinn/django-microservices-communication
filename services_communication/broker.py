@@ -499,7 +499,11 @@ class BlockedConsumer(BlockedMixin):
         self._on_message_callback = on_message_callback
 
     def on_message(self, channel, method_frame, header_frame, body):
-        self._on_message_callback(method_frame, header_frame, body)
+        try:
+            self._on_message_callback(method_frame, header_frame, body)
+        except Exception:
+            channel.basic_nack(delivery_tag=method_frame.delivery_tag, requeue=True)
+            return
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def run(self):
@@ -507,7 +511,7 @@ class BlockedConsumer(BlockedMixin):
             try:
                 connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
                 channel = connection.channel()
-                channel.basic_qos(prefetch_count=3)
+                # channel.basic_qos(prefetch_count=15)
                 self._declare_queue(channel)
                 self._declare_exchanges(channel)
                 self._declare_binds(channel)
@@ -528,11 +532,9 @@ class BlockedConsumer(BlockedMixin):
                 continue
             # Do not recover on channel errors
             except pika.exceptions.AMQPChannelError as err:
-                print("Caught a channel error: {}, stopping...".format(err))
                 break
             # Recover on all other connection errors
             except pika.exceptions.AMQPConnectionError:
-                print("Connection was closed, retrying...")
                 continue
 
 
@@ -553,10 +555,12 @@ class BlockedPublisher(BlockedMixin):
                  body):
 
         if not self._connection:
-            print("Connecting...")
+            logger.debug("Connect to rebbit")
             self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
         if not self._channel:
             self._channel = self._connection.channel()
+
+        self._channel.confirm_delivery()
 
         self._declare_exchanges(self._channel)
 
