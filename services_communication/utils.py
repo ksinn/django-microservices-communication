@@ -32,14 +32,23 @@ class MessageRouter:
         def decorator(fun):
             self.add_consumer(fun, exchange_name, routing_key=routing_key)
             return fun
+
         return decorator
 
     def __call__(self, basic_deliver, properties, body):
         routing_key = basic_deliver.routing_key
+        exchange = basic_deliver.exchange
 
         handler = self._get_handler(basic_deliver, properties)
         if handler:
-            handler(routing_key, underscoreize(json.loads(body)))
+            try:
+                handler(routing_key, underscoreize(json.loads(body)))
+            except Exception as e:
+                logger.exception(
+                    "Consumer raise error on message from exchange '{}' with routing rey '{}'".format(exchange,
+                                                                                                      routing_key))
+                logger.exception(e)
+                raise Exception('Not consumed')
 
     def _get_handler(self, basic_deliver, properties):
         routing_key = basic_deliver.routing_key
@@ -59,7 +68,3 @@ class MessageRouter:
                     'No router for message from exchange %s with routing key %s' % (exchange, routing_key))
                 return None
         return handler
-
-
-
-
