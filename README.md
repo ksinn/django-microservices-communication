@@ -74,7 +74,8 @@ some_project/
         | viwes.py
 ```
 
-Every consumer function must be registered in message router.
+Consumer function must be registered in message router.
+Basic consumer function mast accept 2 positional arguments: _routing key_ and _message body_.
 
 Example  consumers.py file:
 ```
@@ -85,6 +86,19 @@ from services_communication.consumer import message_router
 @message_router.consumer('my_other_exchange')  # For get all routing keys
 def stupid_consume_function(routing_key, body):
     print(routing_key, body)
+```
+
+If you want to consume aggregate event, use decorator _@event_consumer_ and after then consumer function mast accept only on positional argument _event payload_ and other event data as _kwargs_
+Example  consumers.py file:
+```
+from services_communication.consumer import message_router
+
+@message_router.consumer('my_exchange1', 'event.update')
+@message_router.consumer('my_exchange1', 'event.create')
+@message_router.consumer('my_other_exchange')  # For get all routing keys
+@event_consumer
+def stupid_consume_function(payload, **kwargs):
+    print(payload)
 ```
 
 Run consumer
