@@ -499,11 +499,7 @@ class BlockedConsumer(BlockedMixin):
         self._on_message_callback = on_message_callback
 
     def on_message(self, channel, method_frame, header_frame, body):
-        try:
-            self._on_message_callback(method_frame, header_frame, body)
-        except Exception:
-            channel.basic_reject(delivery_tag=method_frame.delivery_tag, requeue=True)
-            return
+        self._on_message_callback(method_frame, header_frame, body)
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def run(self):

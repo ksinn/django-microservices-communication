@@ -49,7 +49,6 @@ class MessageRouter:
                     exchange,
                     routing_key
                 ))
-                logger.exception(e)
                 raise Exception('Not consumed')
 
     def _get_handler(self, basic_deliver, properties):
