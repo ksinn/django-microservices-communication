@@ -476,7 +476,7 @@ class BlockedMixin:
 
     def _declare_exchanges(self, channel):
         for exchange in self._exchanges:
-            channel.exchange_declare(exchange.name, exchange_type=exchange.type)
+            channel.exchange_declare(exchange.name, exchange_type=exchange.type, durable=True)
 
     def _declare_binds(self, channel):
         for bind in self._binds:
