@@ -502,7 +502,7 @@ class BlockedConsumer(BlockedMixin):
         try:
             self._on_message_callback(method_frame, header_frame, body)
         except Exception:
-            channel.basic_nack(delivery_tag=method_frame.delivery_tag, requeue=True)
+            channel.basic_reject(delivery_tag=method_frame.delivery_tag, requeue=True)
             return
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
