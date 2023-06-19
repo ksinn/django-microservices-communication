@@ -44,9 +44,11 @@ class MessageRouter:
             try:
                 handler(routing_key, underscoreize(json.loads(body)))
             except Exception as e:
-                logger.exception(
-                    "Consumer raise error on message from exchange '{}' with routing rey '{}'".format(exchange,
-                                                                                                      routing_key))
+                logger.exception("Consumer '{}' raise error on message from exchange '{}' with routing rey '{}'".format(
+                    handler.__name__,
+                    exchange,
+                    routing_key
+                ))
                 logger.exception(e)
                 raise Exception('Not consumed')
 
