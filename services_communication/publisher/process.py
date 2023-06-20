@@ -1,5 +1,5 @@
 ﻿import json
-
+import time
 import pika
 
 from services_communication.models import PublishedEventQueue
@@ -24,6 +24,7 @@ def run_publisher():
                 }),
             )
             event.delete()
+        time.sleep(1)
 
 
 def _get_publisher():
