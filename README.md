@@ -212,9 +212,13 @@ new_subject = post(
 In all methods function you can send additional keyword argument, it was sent to request.
 
 For formatting request and response uoy can send custom function as *request_formatter* and *response_formatter* keyword arguments. 
+
 *request_formatter* will be applied to other request arguments(params, json, data).
-*response formatter* will be applied to response and it result be returned from method.
+
+*response_formatter* will be applied to response and it result be returned from method.
+
 By default:
-    - get, post, delete methods return response.json
-    - head method return full response
+
+- get, post, delete methods return response.json
+- head method return full response
 
