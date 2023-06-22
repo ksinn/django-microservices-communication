@@ -1,8 +1,12 @@
-Pub/Sub for service on django
+Easy communication for django based microservices
 =======================
+Library provides tools for:
+- Publisher/Subscription pattern
+- Sending async command
+- REST API 
 
 Installation
------------------
+----------------
 ```commandline
  pip install git+https://github.com/ksinn/django-microservices-communication
 ```
@@ -42,11 +46,19 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
         ('my_exchange1', 'event.*'),
         'my_other_exchange',
     ],
+    
+    'REST_API_HOST': 'http://api.example.com',
+    'REST_API_USERNAME': 'username',
+    'REST_API_PASSWORD': 'password',
 }
 ```
 Defaults:
 - exchange type - _topic_
 - bind routing key - _'#'_
+
+
+*Async communication*
+---------------------------------
 
 Consuming
 ----------------
@@ -164,3 +176,45 @@ send_command(
 ```
 
 If remote service has any commands, you may want to use optional argument _command_name_.
+
+
+*Sync communication*
+---------------------
+
+REST API
+----------
+For request endpoint use method functions from rest_api package.
+
+```python
+from services_communication.rest_api import get, post, head, delete
+from services_communication.rest_api.formatter import full_response
+
+first_subject = get('api/v1/subjects/1')  # return only response body as dict
+
+first_subject = get(
+    'api/v1/subjects',
+    params={
+        'page': 2,
+        'size': 20,
+    },
+)  # sending query params
+
+response = get('api/v1/subjects/1', response_formatter=full_response)  # return response object
+
+new_subject = post(
+    'api/v1/subjects',
+    json={
+        'name': 'My new subject',
+        'order': 5,
+    },
+)  # sending request body
+```
+In all methods function you can send additional keyword argument, it was sent to request.
+
+For formatting request and response uoy can send custom function as *request_formatter* and *response_formatter* keyword arguments. 
+*request_formatter* will be applied to other request arguments(params, json, data).
+*response formatter* will be applied to response and it result be returned from method.
+By default:
+    - get, post, delete methods return response.json
+    - head method return full response
+
