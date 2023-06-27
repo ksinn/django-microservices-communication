@@ -22,6 +22,7 @@ class MessageRouter:
 
     def __init__(self):
         self._handlers = {}
+        self._default_handler = None
 
     def add_consumer(self, func, exchange_name='', routing_key=''):
         if exchange_name not in self._handlers:
@@ -34,6 +35,10 @@ class MessageRouter:
             return fun
 
         return decorator
+
+    def default_consumer(self, fun):
+        self._default_handler = fun
+        return fun
 
     def __call__(self, basic_deliver, properties, body):
         routing_key = basic_deliver.routing_key
@@ -56,10 +61,10 @@ class MessageRouter:
         exchange = basic_deliver.exchange
 
         if exchange not in self._handlers:
-            if '' in self._handlers:
-                return self._handlers['']
+            if self._default_handler:
+                return self._default_handler
 
-            logger.warning('No router for message from exchange %s with routing key %s' % (exchange, routing_key))
+            logger.warning('No router for message from exchange %s with routing key %s and default consumer not set!' % (exchange, routing_key))
             return None
 
         exchange_handlers = self._handlers[exchange]
