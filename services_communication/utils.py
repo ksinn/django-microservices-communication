@@ -28,7 +28,7 @@ class MessageRouter:
             self._handlers[exchange_name] = {}
         self._handlers[exchange_name][routing_key] = func
 
-    def consumer(self, exchange_name, routing_key=''):
+    def consumer(self, exchange_name='', routing_key=''):
         def decorator(fun):
             self.add_consumer(fun, exchange_name, routing_key=routing_key)
             return fun
