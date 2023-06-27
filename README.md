@@ -96,6 +96,7 @@ from services_communication.consumer import message_router
 @message_router.consumer('my_exchange1', 'event.update')
 @message_router.consumer('my_exchange1', 'event.create')
 @message_router.consumer('my_other_exchange')  # For get all routing keys
+@message_router.consumer()  # For get all exchange (default consumer)
 def stupid_consume_function(routing_key, body):
     print(routing_key, body)
 ```

@@ -23,7 +23,7 @@ class MessageRouter:
     def __init__(self):
         self._handlers = {}
 
-    def add_consumer(self, func, exchange_name, routing_key=''):
+    def add_consumer(self, func, exchange_name='', routing_key=''):
         if exchange_name not in self._handlers:
             self._handlers[exchange_name] = {}
         self._handlers[exchange_name][routing_key] = func
@@ -56,6 +56,9 @@ class MessageRouter:
         exchange = basic_deliver.exchange
 
         if exchange not in self._handlers:
+            if '' in self._handlers:
+                return self._handlers['']
+
             logger.warning('No router for message from exchange %s with routing key %s' % (exchange, routing_key))
             return None
 
