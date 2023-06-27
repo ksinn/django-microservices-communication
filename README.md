@@ -124,6 +124,8 @@ Run consumer
 python manage.py runconsumer
 ```
 
+Or user _devconsumer_ for auto reloading on change files
+
 Publishing
 --------------
 
@@ -162,6 +164,9 @@ Run publisher process
 ```commandline
 python manage.py runpublisher
 ```
+
+
+Or user _devpublisher_ for auto reloading on change files
 
 Commands
 --------------

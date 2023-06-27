@@ -73,6 +73,8 @@ class MessageRouter:
         if not handler:
             handler = exchange_handlers.get('')
             if not handler:
+                if self._default_handler:
+                    return self._default_handler
                 logger.warning(
                     'No router for message from exchange %s with routing key %s' % (exchange, routing_key))
                 return None
