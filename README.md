@@ -99,6 +99,11 @@ from services_communication.consumer import message_router
 @message_router.consumer()  # For get all exchange (default consumer)
 def stupid_consume_function(routing_key, body):
     print(routing_key, body)
+
+
+@message_router.default_consumer  # For get message not routed to other consumers
+def stupid_consume_function(routing_key, body):
+    print(payload)
 ```
 
 If you want to consume aggregate event, use decorator _@event_consumer_ and after then consumer function mast accept only on positional argument _event payload_ and other event data as _kwargs_
