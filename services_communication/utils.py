@@ -24,12 +24,12 @@ class MessageRouter:
         self._handlers = {}
         self._default_handler = None
 
-    def add_consumer(self, func, exchange_name='', routing_key=''):
+    def add_consumer(self, func, exchange_name, routing_key=''):
         if exchange_name not in self._handlers:
             self._handlers[exchange_name] = {}
         self._handlers[exchange_name][routing_key] = func
 
-    def consumer(self, exchange_name='', routing_key=''):
+    def consumer(self, exchange_name, routing_key=''):
         def decorator(fun):
             self.add_consumer(fun, exchange_name, routing_key=routing_key)
             return fun
