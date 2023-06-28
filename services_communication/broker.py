@@ -1,12 +1,12 @@
 import functools
-import logging
 import time
 import pika
 import asyncio
 
 from pika.adapters.asyncio_connection import AsyncioConnection
+from services_communication.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class AsynchronousConsumer(object):
@@ -555,9 +555,10 @@ class BlockedPublisher(BlockedMixin):
                  body):
 
         if not self._connection:
-            logger.debug("Connect to rebbit")
+            logger.debug("Connect to rabbit")
             self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
         if not self._channel:
+            logger.debug("Open channel")
             self._channel = self._connection.channel()
             self._channel.confirm_delivery()
 
@@ -570,24 +571,25 @@ class BlockedPublisher(BlockedMixin):
     def publish(self, *args, **kwargs):
         try:
             self._publish(*args, **kwargs)
-        except pika.exceptions.ConnectionClosedByBroker:
+        except pika.exceptions.ConnectionClosedByBroker as err:
             # Uncomment this to make the example not attempt recovery
             # from server-initiated connection closure, including
             # when the node is stopped cleanly
             #
             # break
-
+            logger.debug("Caught a connection error: {}, retrying...".format(err))
             self._retry_publish(*args, **kwargs)
         # Do not recover on channel errors
         except pika.exceptions.AMQPChannelError as err:
-            print("Caught a channel error: {}, stopping...".format(err))
+            logger.debug("Caught a channel error: {}, stopping...".format(err))
             raise err
         # Recover on all other connection errors
         except pika.exceptions.AMQPConnectionError:
-            print("Connection was closed, retrying...")
+            logger.debug("Connection was closed, retrying...")
             self._retry_publish(*args, **kwargs)
 
     def _retry_publish(self, *args, **kwargs):
-        self._connection = None
+        logger.debug("Retrying...")
         self._channel = None
+        self._connection = None
         self._publish(*args, **kwargs)

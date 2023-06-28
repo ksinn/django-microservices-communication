@@ -1,9 +1,9 @@
 import json
-import logging
 from djangorestframework_camel_case.settings import api_settings as camel_case_api_settings
 from djangorestframework_camel_case import util
+from services_communication.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def underscoreize(data):

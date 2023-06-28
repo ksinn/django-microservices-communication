@@ -1,7 +1,6 @@
-import logging
 from django.apps import AppConfig
-
-logger = logging.getLogger(__name__)
+from services_communication.logging import get_logger
+logger = get_logger(__name__)
 
 
 class AppServicesCommunicationConfig(AppConfig):
