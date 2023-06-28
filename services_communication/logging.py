@@ -1,9 +1,11 @@
 import logging
 
-from services_communication.settings import communication_settings
+from django.conf import settings
 
 
 def get_logger(name):
+    level = getattr(settings, 'MICROSERVICES_COMMUNICATION_SETTINGS', {}).get('LOG_LEVEL', logging.ERROR)
+
     logger = logging.getLogger(name)
-    logger.setLevel(communication_settings.LOG_LEVEL)
+    logger.setLevel(level)
     return logger

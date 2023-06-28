@@ -45,7 +45,6 @@ class Settings:
         if not user:
             user = {}
 
-        self.LOG_LEVEL = self.get_value("LOG_LEVEL", default, user)
         self.BROKER_CONNECTION_URL = self.get_value("BROKER_CONNECTION_URL", default, user)
         self.QUEUE = self.get_value("QUEUE", default, user)
         self.MESSAGE_CONSUMER = import_string(self.get_value("MESSAGE_CONSUMER", default, user))
