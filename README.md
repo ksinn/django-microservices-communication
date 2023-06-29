@@ -35,16 +35,17 @@ Any global settings are kept in a single configuration dictionary named MICROSER
 Start off by adding the following to your settings.py module:
 ```python
 MICROSERVICES_COMMUNICATION_SETTINGS = {
+    'APP_ID': 'my-service',
     'BROKER_CONNECTION_URL': 'amqp://guest:guest@localhost:5672',
-    'QUEUE': 'my_queue',
+    'QUEUE': 'my-queue',
     'EXCHANGES': [
-        'my_exchange1',
-        ('my_other_exchange', 'fanout'),
+        'my-exchange1',
+        ('my-other-exchange', 'fanout'),
         'exchange3',
     ],
     'BINDS': [
-        ('my_exchange1', 'event.*'),
-        'my_other_exchange',
+        ('my-exchange1', 'event.*'),
+        'my-other-exchange',
     ],
     
     'REST_API_HOST': 'http://api.example.com',
@@ -93,9 +94,9 @@ Example  consumers.py file:
 ```
 from services_communication.consumer import message_router
 
-@message_router.consumer('my_exchange1', 'event.update')
-@message_router.consumer('my_exchange1', 'event.create')
-@message_router.consumer('my_other_exchange')  # For get all routing keys
+@message_router.consumer('my-exchange1', 'event.update')
+@message_router.consumer('my-exchange1', 'event.create')
+@message_router.consumer('my-other-exchange')  # For get all routing keys
 @message_router.consumer()  # For get all exchange (default consumer)
 def stupid_consume_function(routing_key, body):
     print(routing_key, body)
@@ -111,9 +112,9 @@ Example  consumers.py file:
 ```
 from services_communication.consumer import message_router
 
-@message_router.consumer('my_exchange1', 'event.update')
-@message_router.consumer('my_exchange1', 'event.create')
-@message_router.consumer('my_other_exchange')  # For get all routing keys
+@message_router.consumer('my-exchange1', 'event.update')
+@message_router.consumer('my-exchange1', 'event.create')
+@message_router.consumer('my-ether_exchange')  # For get all routing keys
 @event_consumer
 def stupid_consume_function(payload, **kwargs):
     print(payload)
