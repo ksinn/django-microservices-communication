@@ -1,14 +1,13 @@
 ﻿import json
 import time
-import pika
 
 from services_communication.models import PublishedEventQueue
-from services_communication.publisher.utils import build_publisher_by_settings
+from services_communication.publisher import utils
 
 
 def run_publisher():
-    _check_publisher_settings()
-    publisher = _get_publisher()
+    utils.check_publisher_settings()
+    publisher = utils.build_publisher_by_settings()
     while True:
         for event in PublishedEventQueue.objects.all():
             publisher.publish(
@@ -26,10 +25,3 @@ def run_publisher():
             event.delete()
         time.sleep(1)
 
-
-def _get_publisher():
-    return build_publisher_by_settings()
-
-
-def _check_publisher_settings():
-    pass

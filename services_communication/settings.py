@@ -16,6 +16,7 @@ DEFAULT = {
 
     'BINDS': [
     ],  # The AMQP binds for consumer. String or tuple of exchange name and routing keys'
+    'PUBLISHER_CLASS': 'services_communication.broker.BlockedPublisher',
     'CONSUMER_CLASS': 'services_communication.broker.BlockedConsumer',
     'MESSAGE_CONSUMER': 'services_communication.consumer.message_router',
 
@@ -39,6 +40,7 @@ class Settings:
     BINDS: Tuple[Bind] = None
     MESSAGE_CONSUMER = None
     CONSUMER_CLASS = None
+    PUBLISHER_CLASS = None
     REST_API_HOST = None
     REST_API_USERNAME = None
     REST_API_PASSWORD = None
@@ -52,6 +54,7 @@ class Settings:
         self.QUEUE = self.get_value("QUEUE", default, user)
         self.MESSAGE_CONSUMER = import_string(self.get_value("MESSAGE_CONSUMER", default, user))
         self.CONSUMER_CLASS = import_string(self.get_value("CONSUMER_CLASS", default, user))
+        self.PUBLISHER_CLASS = import_string(self.get_value("PUBLISHER_CLASS", default, user))
 
         self.APP_ID = self.get_value("APP_ID", default, user) or self.get_django_project_name()
 
