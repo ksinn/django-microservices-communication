@@ -1,3 +1,4 @@
+import os
 from collections import namedtuple
 from typing import Tuple
 
@@ -7,6 +8,7 @@ from pika.exchange_type import ExchangeType
 
 DEFAULT = {
     'LOG_LEVEL': 'ERROR',
+    'APP_ID': None,  # Use for publisher
     'BROKER_CONNECTION_URL': 'amqp://guest:guest@localhost:5672',  # The AMQP url to connect with'
     'QUEUE': '',  # The AMQP queue for consume'
     'EXCHANGES': [
@@ -30,6 +32,7 @@ Bind = namedtuple("Bind", ['exchange', 'routing_key'])
 
 class Settings:
     LOG_LEVEL = None
+    APP_ID = None
     BROKER_CONNECTION_URL: str = None
     QUEUE: str = None
     EXCHANGES: Tuple[Exchange] = None
@@ -49,6 +52,8 @@ class Settings:
         self.QUEUE = self.get_value("QUEUE", default, user)
         self.MESSAGE_CONSUMER = import_string(self.get_value("MESSAGE_CONSUMER", default, user))
         self.CONSUMER_CLASS = import_string(self.get_value("CONSUMER_CLASS", default, user))
+
+        self.APP_ID = self.get_value("APP_ID", default, user) or self.get_django_project_name()
 
         exchanges = self.get_value("EXCHANGES", default, user)
         self.EXCHANGES = tuple(map(self.build_exchange, exchanges))
@@ -91,6 +96,10 @@ class Settings:
         if key in user:
             return user[key]
         return default[key]
+
+    def get_django_project_name(self):
+        return os.environ['DJANGO_SETTINGS_MODULE'].split('.')[0]
+
 
 
 communication_settings = Settings(DEFAULT, getattr(settings, 'MICROSERVICES_COMMUNICATION_SETTINGS', None))

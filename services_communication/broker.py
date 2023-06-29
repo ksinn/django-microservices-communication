@@ -541,6 +541,7 @@ class BlockedConsumer(BlockedMixin):
 class BlockedPublisher(BlockedMixin):
 
     def __init__(self,
+                 app_id=None,
                  broker_url=None,
                  exchanges=None,
                  **kwargs):
@@ -548,6 +549,8 @@ class BlockedPublisher(BlockedMixin):
         self._exchanges = exchanges
         self._connection = None
         self._channel = None
+        self._app_id = app_id or 'anonymous'
+
 
     def _publish(self,
                  exchange,
@@ -564,9 +567,16 @@ class BlockedPublisher(BlockedMixin):
 
         self._declare_exchanges(self._channel)
 
-        return self._channel.basic_publish(exchange, routing_key, body,
-                                           properties=pika.BasicProperties(content_type='text/json',
-                                                                           delivery_mode=pika.DeliveryMode.Persistent))
+        return self._channel.basic_publish(
+            exchange,
+            routing_key,
+            body,
+            properties=pika.BasicProperties(
+                content_type='text/json',
+                delivery_mode=pika.DeliveryMode.Persistent,
+                app_id=self._app_id
+            ),
+        )
 
     def publish(self, *args, **kwargs):
         try:
