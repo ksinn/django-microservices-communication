@@ -13,6 +13,7 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=[
         "Django",
+        "djangorestframework",
         "djangorestframework-camel-case",
         "pika",
         "requests",
