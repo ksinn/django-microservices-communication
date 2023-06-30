@@ -8,11 +8,12 @@ class RestApiError(Exception):
 class RestApiRequestError(RestApiError):
 
     def __init__(self, url, method, e, *args, **kwargs):
-        super("Request to {} {} rice error {}".format(method, url, e))
+        super().__init__("Request to {} {} rice error {}".format(method, url, e))
 
 
 class RestApiConnectionError(RestApiRequestError):
     pass
+
 
 class RestApiTimeoutError(RestApiRequestError):
     pass
@@ -21,7 +22,7 @@ class RestApiTimeoutError(RestApiRequestError):
 class RestApiResponseWithError(RestApiError):
 
     def __init__(self, url, method, response, *args, **kwargs):
-        super("Endpoint {} {} response with {}:{}".format(method, url, response.status_code, response.text))
+        super().__init__("Endpoint {} {} response with {}:{}".format(method, url, response.status_code, response.text))
         self.status_code = response.status_code
         try:
             self.response_body = response.json
