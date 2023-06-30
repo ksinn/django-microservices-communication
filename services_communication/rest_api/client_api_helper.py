@@ -1,4 +1,6 @@
 import requests
+
+from services_communication.rest_api import error
 from services_communication.settings import communication_settings
 
 from services_communication.rest_api.formatter import json_request, json_response, full_response
@@ -44,11 +46,15 @@ def _request(uri, method, request_formatter, response_formatter, params={}, json
             files=files,
             **kwargs,
         )
-    except Exception as e:
-        raise raise_exception(url, method, e)
+    except requests.exceptions.ConnectionError as e:
+        raise error.RestApiConnectionError(url, method, e)
+    except requests.exceptions.Timeout as e:
+        raise error.RestApiTimeoutError(url, method, e)
+    except requests.exceptions.RequestException as e:
+        raise error.RestApiRequestError(url, method, e)
 
     if response.status_code / 100 != 2:
-        raise_error(uri, method, response)
+        raise build_response_error(uri, method, response)
 
     return response_formatter(response)
 
@@ -57,19 +63,26 @@ def build_url(uri):
     return f'{API_HOST}/{uri}'
 
 
-def raise_error(url, method, response):
+def build_response_error(url, method, response):
     # todo: add service api error handel
-    # error_class = ERROR_BY_STATUS_MAP.get(response.status_code, ServiceReturnError)
-    error_class = ERROR_BY_STATUS_MAP.get(response.status_code, Exception)
-    raise error_class("Request to {} {} response with {}:{}".format(url, method, response.status_code, response.text))
+    error_class = ERROR_BY_STATUS_MAP.get(response.status_code)
 
+    if not error_class:
+        if response.status_code / 100 != 4:
+            error_class = error.RestApiClientError
+        elif response.status_code / 100 != 5:
+            error_class = error.RestApiServerError
+        else:
+            error_class = error.RestApiResponseWithError
 
-def raise_exception(url, method, e):
-    raise Exception("Request to {} {} rice error {}".format(url, method, e))
+    return error_class(url, method, response)
 
 
 ERROR_BY_STATUS_MAP = {
-    # 400: ServiceReturnBadRequest,
-    # 404: ServiceReturnNotFound,
-    # 500: ServiceReturnInternalServerError,
+    400: error.RestApiBadRequestError,
+    401: error.RestApiUnauthorizedError,
+    403: error.RestApiForbiddenError,
+    404: error.RestApiNotFountError,
+    502: error.RestApiBadGatewayError,
+    504: error.RestApiGatewayTimeoutError,
 }
