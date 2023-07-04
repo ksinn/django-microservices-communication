@@ -32,7 +32,7 @@ def _request(uri, method, request_formatter, response_formatter, params={}, json
         headers = {}
 
     if not no_auth:
-        headers['Authorization'] = get_alive_access_token()
+        headers['Authorization'] = 'Bearer ' + get_alive_access_token()
 
     try:
         response = requests.request(

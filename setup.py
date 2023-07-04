@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='services_communication',
-    version='2.0.7',
+    version='2.0.8',
     packages=find_packages(),
     url='https://github.com/ksinn/django-microservices-communication',
     author='ksinn',
