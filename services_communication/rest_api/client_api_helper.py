@@ -1,4 +1,5 @@
 import requests
+from django.utils.translation import get_language
 
 from services_communication.rest_api import error
 from services_communication.settings import communication_settings
@@ -30,6 +31,8 @@ def _request(uri, method, request_formatter, response_formatter, params={}, json
 
     if headers is None:
         headers = {}
+
+    headers['Accept-Language'] = get_language()
 
     if not no_auth:
         headers['Authorization'] = 'Bearer ' + get_alive_access_token()
