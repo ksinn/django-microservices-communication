@@ -25,7 +25,7 @@ class RestApiResponseWithError(RestApiError):
         super().__init__("Endpoint {} {} response with {}:{}".format(method, url, response.status_code, response.text))
         self.status_code = response.status_code
         try:
-            self.response_body = response.json
+            self.response_body = response.json()
             self.has_response_body = True
         except:
             self.response_body = {}
