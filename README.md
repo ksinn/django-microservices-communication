@@ -175,6 +175,8 @@ A command is a way of telling remote service to do something without waiting for
 
 For send command immediately, without regard to transactionality, use _send_command_ with service name and payloads as arguments.
 
+You can set timeout in seconds for command executing, this means that the executor of the command should not execute it if the specified time has passed since the time it was sent (called _send_command_ function).
+
 ```python
 from services_communication.call import send_command
 
