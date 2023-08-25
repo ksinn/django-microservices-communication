@@ -22,3 +22,8 @@ build
 manage.py
 service_fiveplus_v2_learning
 django_db.sqlite3
+
+build
+dist
+*.egg-info
+test_project

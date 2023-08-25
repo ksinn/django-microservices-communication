@@ -2,6 +2,7 @@
 class RestApiError(Exception):
 
     def __init__(self, message):
+        super(message)
         self.message = message
 
 
