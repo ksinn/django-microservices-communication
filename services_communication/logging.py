@@ -12,7 +12,6 @@ def get_logger(name, loggers={}):
             level = logging.DEBUG if settings.DEBUG else logging.WARNING
 
         logger = logging.Logger(name)
-        print(level)
 
         LOG_ROOT = "../logs"
         if not os.path.exists(LOG_ROOT):
