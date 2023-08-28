@@ -1,9 +1,11 @@
 import json
 from djangorestframework_camel_case.settings import api_settings as camel_case_api_settings
 from djangorestframework_camel_case import util
+
+from services_communication.error import MessageNotConsumed
 from services_communication.logging import get_logger
 
-logger = get_logger(__name__)
+logger = get_logger('consumer')
 
 
 def underscoreize(data):
@@ -54,7 +56,7 @@ class MessageRouter:
                     exchange,
                     routing_key
                 ))
-                raise Exception('Not consumed')
+                raise MessageNotConsumed()
 
     def _get_handler(self, basic_deliver, properties):
         routing_key = basic_deliver.routing_key
@@ -64,7 +66,7 @@ class MessageRouter:
             if self._default_handler:
                 return self._default_handler
 
-            logger.warning('No router for message from exchange %s with routing key %s and default consumer not set!' % (exchange, routing_key))
+            logger.warning('No router for message from exchange %s with routing key %s and default consumer not set! The message will be ignored ' % (exchange, routing_key))
             return None
 
         exchange_handlers = self._handlers[exchange]
@@ -76,6 +78,6 @@ class MessageRouter:
                 if self._default_handler:
                     return self._default_handler
                 logger.warning(
-                    'No router for message from exchange %s with routing key %s' % (exchange, routing_key))
+                    'No router for message from exchange %s with routing key %s. The message will be ignored' % (exchange, routing_key))
                 return None
         return handler

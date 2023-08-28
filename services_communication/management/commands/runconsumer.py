@@ -1,5 +1,6 @@
 from django.core.management import BaseCommand
 from services_communication.consumer.process import run_consumer
+from services_communication.consumer import message_router
 
 import logging
 logging.basicConfig(level=logging.WARNING)
@@ -9,13 +10,18 @@ class Command(BaseCommand):
     help = "Run consumer"
 
     def handle(self, *args, **options):
+        if not message_router._handlers and not message_router._default_handler:
             self.stdout.write(
-                self.style.SUCCESS('Starting consumer')
+                self.style.WARNING('No one handler registered in default message router. It\'s right?')
             )
 
-            try:
-                run_consumer()
-            except KeyboardInterrupt:
-                self.style.SUCCESS('Consumer stopped')
+        self.stdout.write(
+            self.style.SUCCESS('Starting consumer')
+        )
+
+        try:
+            run_consumer()
+        except KeyboardInterrupt:
+            self.style.SUCCESS('Consumer stopped')
 
 
