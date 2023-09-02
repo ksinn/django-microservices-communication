@@ -11,7 +11,7 @@ from services_communication.utils import camelize
 def send_command(service_name, arguments, command_name='', timeout=None):
     meta = {}
 
-    if not timeout:
+    if timeout:
         meta['expired_time'] = now() + timedelta(seconds=timeout)
 
     arguments['meta'] = meta
