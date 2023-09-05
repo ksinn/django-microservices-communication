@@ -56,7 +56,7 @@ def _request(uri, method, request_formatter, response_formatter, params={}, json
     except requests.exceptions.RequestException as e:
         raise error.RestApiRequestError(url, method, e)
 
-    if response.status_code / 100 != 2:
+    if response.status_code // 100 != 2:
         raise build_response_error(uri, method, response)
 
     return response_formatter(response)
@@ -71,9 +71,9 @@ def build_response_error(url, method, response):
     error_class = ERROR_BY_STATUS_MAP.get(response.status_code)
 
     if not error_class:
-        if response.status_code / 100 != 4:
+        if response.status_code // 100 == 4:
             error_class = error.RestApiClientError
-        elif response.status_code / 100 != 5:
+        elif response.status_code // 100 == 5:
             error_class = error.RestApiServerError
         else:
             error_class = error.RestApiResponseWithError
