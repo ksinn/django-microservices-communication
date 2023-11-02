@@ -25,15 +25,15 @@ def set_auth(auth):
 def refresh_auth():
     from . import client_api_helper
 
+    assert communication_settings.REST_API_CREDENTIAL, 'Credentional for service auth not provide. Set it in MICROSERVICES_COMMUNICATION_SETTINGS.REST_API_CREDENTIAL'
+    assert communication_settings.REST_API_AUTH_URL, 'Uri for service login endpoint not provide. Set it in MICROSERVICES_COMMUNICATION_SETTINGS.REST_API_AUTH_URL'
+
     auth_data = client_api_helper._request(
         uri=communication_settings.REST_API_AUTH_URL,
         method='POST',
         request_formatter=client_api_helper.json_request,
         response_formatter=client_api_helper.json_response,
-        json={
-            "username": communication_settings.REST_API_USERNAME,
-            "password": communication_settings.REST_API_PASSWORD,
-        },
+        json=communication_settings.REST_API_CREDENTIAL,
         no_auth=True,
     )
 

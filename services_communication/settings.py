@@ -18,12 +18,11 @@ DEFAULT = {
     ],  # The AMQP binds for consumer. String or tuple of exchange name and routing keys'
     'CONSUMER_CLASS': 'services_communication.broker.BlockedConsumer',
     'MESSAGE_CONSUMER': 'services_communication.consumer.message_router',
+    # Callback func(basic_deliver, properties, body)
 
     'REST_API_HOST': 'http://localhost:8000',
-    'REST_API_USERNAME': 'username',
-    'REST_API_PASSWORD': 'password',
-    'REST_API_AUTH_URL': 'api/v1/auth',
-    # Callback func(basic_deliver, properties, body)
+    'REST_API_CREDENTIAL': None,  # {"username": "username", "password": "123456"}
+    'REST_API_AUTH_URL': None  # 'api/v1/auth',
 }
 
 Exchange = namedtuple("Exchange", ['name', 'type'])
@@ -40,8 +39,7 @@ class Settings:
     MESSAGE_CONSUMER = None
     CONSUMER_CLASS = None
     REST_API_HOST = None
-    REST_API_USERNAME = None
-    REST_API_PASSWORD = None
+    REST_API_CREDENTIAL = None
     REST_API_AUTH_URL = None
 
     def __init__(self, default, user):
@@ -64,9 +62,9 @@ class Settings:
         self.QUEUE = self.get_value("QUEUE", default, user)
 
         self.REST_API_HOST = self.get_value("REST_API_HOST", default, user)
-        self.REST_API_USERNAME = self.get_value("REST_API_USERNAME", default, user)
-        self.REST_API_PASSWORD = self.get_value("REST_API_PASSWORD", default, user)
         self.REST_API_AUTH_URL = self.get_value("REST_API_AUTH_URL", default, user)
+        self.REST_API_CREDENTIAL = self.get_rest_api_credential(default, user)
+
 
 
     def build_bind(self, bind_settings):
@@ -100,6 +98,21 @@ class Settings:
     def get_django_project_name(self):
         return os.environ['DJANGO_SETTINGS_MODULE'].split('.')[0]
 
+    def get_rest_api_credential(self, default, user):
+        credential = self.get_value("REST_API_CREDENTIAL", default, user)
+        if credential:
+            return credential
+
+        username = user.get("REST_API_USERNAME", None)
+        password = user.get("REST_API_PASSWORD", None)
+
+        if username or password:
+            return {
+                "username": username,
+                "password": password,
+            }
+
+        return None
 
 
 communication_settings = Settings(DEFAULT, getattr(settings, 'MICROSERVICES_COMMUNICATION_SETTINGS', None))
