@@ -483,14 +483,14 @@ class BlockedMixin:
 class BlockedConsumer(BlockedMixin):
 
     def __init__(self,
-                 broker_url=None,
+                 broker_connection_parameters=None,
                  queue=None,
                  exchanges=None,
                  binds=None,
                  on_message_callback=None,
                  **kwargs):
         logger_consumer.debug('Init BlockedConsumer with callback {}'.format(on_message_callback))
-        self._broker_url = broker_url
+        self._broker_connection_parameters = broker_connection_parameters
         self._queue = queue
         self._exchanges = exchanges
         self._binds = binds
@@ -517,7 +517,7 @@ class BlockedConsumer(BlockedMixin):
         #     try:
         try:
                 logger_consumer.debug("Connect to rabbit")
-                with pika.BlockingConnection(pika.URLParameters(self._broker_url)) as connection:
+                with pika.BlockingConnection(parameters=self._broker_connection_parameters) as connection:
                     logger_consumer.debug("Open channel")
                     with connection.channel() as channel:
                         # channel.basic_qos(prefetch_count=15)
@@ -554,10 +554,10 @@ class BlockedPublisher(BlockedMixin):
 
     def __init__(self,
                  app_id=None,
-                 broker_url=None,
+                 broker_connection_parameters=None,
                  exchanges=None,
                  **kwargs):
-        self._broker_url = broker_url
+        self._broker_connection_parameters = broker_connection_parameters
         self._exchanges = exchanges
         self._connection = None
         self._channel = None
@@ -570,7 +570,7 @@ class BlockedPublisher(BlockedMixin):
 
         if not self._connection:
             logger_publisher.debug("Connect to rabbit")
-            self._connection = pika.BlockingConnection(pika.URLParameters(self._broker_url))
+            self._connection = pika.BlockingConnection(parameters=self._broker_connection_parameters)
         if not self._channel:
             logger_publisher.debug("Open channel")
             self._channel = self._connection.channel()

@@ -9,7 +9,7 @@ def run_consumer():
 
 def _get_consumer():
     return communication_settings.CONSUMER_CLASS(
-        broker_url=communication_settings.BROKER_CONNECTION_URL,
+        broker_connection_parameters=communication_settings.BROKER_CONNECTION_PARAMETERS,
         queue=communication_settings.QUEUE,
         exchanges=communication_settings.EXCHANGES,
         binds=communication_settings.BINDS,
@@ -18,4 +18,5 @@ def _get_consumer():
 
 
 def _check_consumer_settings():
-    pass
+    assert communication_settings.BROKER_CONNECTION_PARAMETERS, 'Broker connection not set!'
+    assert communication_settings.QUEUE, 'Broker queue for consuming not set!'

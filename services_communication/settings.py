@@ -2,6 +2,7 @@ import os
 from collections import namedtuple
 from typing import Tuple
 
+import pika
 from django.conf import settings
 from django.utils.module_loading import import_string
 from pika.exchange_type import ExchangeType
@@ -10,6 +11,15 @@ DEFAULT = {
     'LOG_LEVEL': 'ERROR',
     'APP_ID': None,  # Use for publisher
     'BROKER_CONNECTION_URL': 'amqp://guest:guest@localhost:5672',  # The AMQP url to connect with'
+    'BROKER_CONNECTION_PARAMETERS': None,
+    # 'BROKER_CONNECTION_PARAMETERS': {
+    #     'host': 'localhost',
+    #     'port': 5672,
+    #     'virtual_host': None,
+    #     'username': 'guest',
+    #     'password': 'guest',
+    #     'credentials': pika.PlainCredentials('guest', 'guest')
+    # },
     'QUEUE': '',  # The AMQP queue for consume'
     'EXCHANGES': [
     ],  # The AMQP exchanges for publisher or consumer binds. String or tuple of name and type
@@ -32,7 +42,7 @@ Bind = namedtuple("Bind", ['exchange', 'routing_key'])
 class Settings:
     LOG_LEVEL = None
     APP_ID = None
-    BROKER_CONNECTION_URL: str = None
+    BROKER_CONNECTION_PARAMETERS: pika.Parameters = None
     QUEUE: str = None
     EXCHANGES: Tuple[Exchange] = None
     BINDS: Tuple[Bind] = None
@@ -46,7 +56,7 @@ class Settings:
         if not user:
             user = {}
 
-        self.BROKER_CONNECTION_URL = self.get_value("BROKER_CONNECTION_URL", default, user)
+        self.BROKER_CONNECTION_PARAMETERS = self.get_broker_connection_parameters(default, user)
         self.QUEUE = self.get_value("QUEUE", default, user)
         self.MESSAGE_CONSUMER = import_string(self.get_value("MESSAGE_CONSUMER", default, user))
         self.CONSUMER_CLASS = import_string(self.get_value("CONSUMER_CLASS", default, user))
@@ -64,8 +74,6 @@ class Settings:
         self.REST_API_HOST = self.get_value("REST_API_HOST", default, user)
         self.REST_API_AUTH_URL = self.get_value("REST_API_AUTH_URL", default, user)
         self.REST_API_CREDENTIAL = self.get_rest_api_credential(default, user)
-
-
 
     def build_bind(self, bind_settings):
         if isinstance(bind_settings, str):
@@ -113,6 +121,28 @@ class Settings:
             }
 
         return None
+
+    def get_broker_connection_parameters(self, default, user):
+        parameters = self.get_value("BROKER_CONNECTION_PARAMETERS", default, user)
+        if not parameters:
+            connection_url = self.get_value("BROKER_CONNECTION_URL", default, user)
+            return pika.URLParameters(connection_url) if connection_url else None
+
+        assert isinstance(parameters,
+                          dict), 'MICROSERVICES_COMMUNICATION_SETTINGS.BROKER_CONNECTION_PARAMETERS mast be dict, not {}'.format(
+            type(parameters))
+
+        prepared_parameters = parameters.copy()
+        for key, value in parameters:
+            if not value:
+                prepared_parameters.pop(key)
+
+        if 'credentials' not in prepared_parameters:
+            username = prepared_parameters.pop('username', 'guest')
+            password = prepared_parameters.pop('password', 'guest')
+            prepared_parameters['credentials'] = pika.PlainCredentials(username, password)
+
+        return pika.ConnectionParameters(**prepared_parameters)
 
 
 communication_settings = Settings(DEFAULT, getattr(settings, 'MICROSERVICES_COMMUNICATION_SETTINGS', None))

@@ -37,6 +37,16 @@ Start off by adding the following to your settings.py module:
 MICROSERVICES_COMMUNICATION_SETTINGS = {
     'APP_ID': 'my-service',
     'BROKER_CONNECTION_URL': 'amqp://guest:guest@localhost:5672',
+    # or set as connection params dict
+    'BROKER_CONNECTION_PARAMETERS': {
+        'host': 'localhost',
+        'port': 5672,
+        'virtual_host': None,
+        'username': 'guest',
+        'password': 'guest',
+        # Instead username and password you may set pika credentials object
+        'credentials': pika.PlainCredentials('guest', 'guest')
+    },
     'QUEUE': 'my-queue',
     'EXCHANGES': [
         'my-exchange1',
