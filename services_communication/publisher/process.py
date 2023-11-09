@@ -1,6 +1,9 @@
 ﻿import json
 import time
+from datetime import timedelta
+
 import pika
+from django.utils.timezone import now
 
 from services_communication.models import PublishedEventQueue
 from services_communication.publisher.utils import build_publisher_by_settings
@@ -25,6 +28,13 @@ def run_publisher():
             )
             event.delete()
         time.sleep(1)
+
+
+def is_publisher_work(max_queue_size=0, max_delay=15):
+    created_before_time = now() - timedelta(seconds=max_delay)
+    queue_size = PublishedEventQueue.objects.filter(event_time__lt=created_before_time).count()
+
+    return queue_size <= max_queue_size
 
 
 def _get_publisher():
