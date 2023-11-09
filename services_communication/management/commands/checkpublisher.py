@@ -24,8 +24,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        max_queue_size = options.get()
-
         is_healthy = is_publisher_work(
             max_queue_size=options['max_queue_size'],
             max_delay=options['max_delay'],
