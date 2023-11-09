@@ -17,6 +17,6 @@ class Command(BaseCommand):
             try:
                 autoreload.run_with_reloader(run_consumer)
             except KeyboardInterrupt:
-                self.style.SUCCESS('Consumer stopped')
+                self.stdout.write(self.style.SUCCESS('Consumer stopped'))
 
 

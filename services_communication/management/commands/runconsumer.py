@@ -22,6 +22,6 @@ class Command(BaseCommand):
         try:
             run_consumer()
         except KeyboardInterrupt:
-            self.style.SUCCESS('Consumer stopped')
+            self.stdout.write(self.style.SUCCESS('Consumer stopped'))
 
 

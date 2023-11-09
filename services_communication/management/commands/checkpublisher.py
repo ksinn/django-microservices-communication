@@ -32,4 +32,4 @@ class Command(BaseCommand):
         if not is_healthy:
             raise CommandError('Publisher unhealthy')
 
-        self.style.SUCCESS('Publisher healthy')
+        self.stdout.write(self.style.SUCCESS('Publisher healthy'))

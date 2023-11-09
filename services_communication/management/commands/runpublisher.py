@@ -16,6 +16,6 @@ class Command(BaseCommand):
             try:
                 run_publisher()
             except KeyboardInterrupt:
-                self.style.SUCCESS('Publisher stopped')
+                self.stdout.write(self.style.SUCCESS('Publisher stopped'))
 
 

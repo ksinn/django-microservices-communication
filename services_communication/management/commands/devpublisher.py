@@ -18,6 +18,6 @@ class Command(BaseCommand):
             try:
                 autoreload.run_with_reloader(run_publisher)
             except KeyboardInterrupt:
-                self.style.SUCCESS('Publisher stopped')
+                self.stdout.write(self.style.SUCCESS('Publisher stopped'))
 
 
