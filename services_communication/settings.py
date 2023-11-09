@@ -42,7 +42,7 @@ Bind = namedtuple("Bind", ['exchange', 'routing_key'])
 class Settings:
     LOG_LEVEL = None
     APP_ID = None
-    BROKER_CONNECTION_PARAMETERS: pika.Parameters = None
+    BROKER_CONNECTION_PARAMETERS: pika.connection.Parameters = None
     QUEUE: str = None
     EXCHANGES: Tuple[Exchange] = None
     BINDS: Tuple[Bind] = None
@@ -128,12 +128,11 @@ class Settings:
             connection_url = self.get_value("BROKER_CONNECTION_URL", default, user)
             return pika.URLParameters(connection_url) if connection_url else None
 
-        assert isinstance(parameters,
-                          dict), 'MICROSERVICES_COMMUNICATION_SETTINGS.BROKER_CONNECTION_PARAMETERS mast be dict, not {}'.format(
+        assert isinstance(parameters, dict), 'MICROSERVICES_COMMUNICATION_SETTINGS.BROKER_CONNECTION_PARAMETERS mast be dict, not {}'.format(
             type(parameters))
 
         prepared_parameters = parameters.copy()
-        for key, value in parameters:
+        for key, value in parameters.items():
             if not value:
                 prepared_parameters.pop(key)
 
