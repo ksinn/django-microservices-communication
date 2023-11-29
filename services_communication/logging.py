@@ -4,20 +4,6 @@ import os
 from django.conf import settings
 
 
-def get_logger(name="default", loggers={}, max_bytes=100*1000*1000, backup_count=3):
-    if name not in loggers:
-        handler = logging.handlers.RotatingFileHandler(os.path.join(settings.LOG_ROOT, '{}.log'.format(name)), maxBytes=max_bytes, backupCount=backup_count)
-        handler.suffix = "%Y%m%d"
-        handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s: %(funcName)s - %(levelname)s - %(message)s'))
-
-        logger = logging.Logger(name, settings.APP_LOG_LEVEL)
-        logger.addHandler(handler)
-
-        loggers[name] = logger
-
-    return loggers[name]
-
-
 def get_logger(name, loggers={}, max_bytes=100*1000*1000, backup_count=3):
     if name not in loggers:
 
