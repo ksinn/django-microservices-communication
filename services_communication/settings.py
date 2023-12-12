@@ -2,6 +2,7 @@ import os
 from collections import namedtuple
 from typing import Tuple
 
+import django.db.utils
 from django.conf import settings
 from django.utils.module_loading import import_string
 from pika.exchange_type import ExchangeType
@@ -18,6 +19,9 @@ DEFAULT = {
     ],  # The AMQP binds for consumer. String or tuple of exchange name and routing keys'
     'CONSUMER_CLASS': 'services_communication.broker.BlockedConsumer',
     'MESSAGE_CONSUMER': 'services_communication.consumer.message_router',
+    'MESSAGE_CONSUMER_IGNORE_ERRORS': (
+        django.db.utils.InterfaceError,
+    ),
 
     'REST_API_HOST': 'http://localhost:8000',
     'REST_API_USERNAME': 'username',
@@ -28,6 +32,7 @@ DEFAULT = {
 
 Exchange = namedtuple("Exchange", ['name', 'type'])
 Bind = namedtuple("Bind", ['exchange', 'routing_key'])
+import django.db.utils
 
 
 class Settings:
@@ -39,10 +44,12 @@ class Settings:
     BINDS: Tuple[Bind] = None
     MESSAGE_CONSUMER = None
     CONSUMER_CLASS = None
+    CONSUMER_IGNORE_ERRORS = None
     REST_API_HOST = None
     REST_API_USERNAME = None
     REST_API_PASSWORD = None
     REST_API_AUTH_URL = None
+
 
     def __init__(self, default, user):
         if not user:
@@ -51,6 +58,7 @@ class Settings:
         self.BROKER_CONNECTION_URL = self.get_value("BROKER_CONNECTION_URL", default, user)
         self.QUEUE = self.get_value("QUEUE", default, user)
         self.MESSAGE_CONSUMER = import_string(self.get_value("MESSAGE_CONSUMER", default, user))
+        self.MESSAGE_CONSUMER_IGNORE_ERRORS = user.get("MESSAGE_CONSUMER_IGNORE_ERRORS") or default["MESSAGE_CONSUMER_IGNORE_ERRORS"]
         self.CONSUMER_CLASS = import_string(self.get_value("CONSUMER_CLASS", default, user))
 
         self.APP_ID = self.get_value("APP_ID", default, user) or self.get_django_project_name()

@@ -488,6 +488,7 @@ class BlockedConsumer(BlockedMixin):
                  exchanges=None,
                  binds=None,
                  on_message_callback=None,
+                 ignore_callback_error=False,
                  **kwargs):
         logger_consumer.debug('Init BlockedConsumer with callback {}'.format(on_message_callback))
         self._broker_url = broker_url
@@ -495,6 +496,7 @@ class BlockedConsumer(BlockedMixin):
         self._exchanges = exchanges
         self._binds = binds
         self._on_message_callback = on_message_callback
+        self._ignore_callback_error = ignore_callback_error
 
     def on_message(self, channel, method_frame, header_frame, body):
         logger_consumer.debug('Received message (dt:{}) from exchange {} with key {}'.format(method_frame.delivery_tag,
@@ -509,7 +511,9 @@ class BlockedConsumer(BlockedMixin):
         except Exception as e:
             logger_consumer.exception('Message (dt:{}) consume raise error'.format(method_frame.delivery_tag))
             channel.basic_reject(delivery_tag=method_frame.delivery_tag, requeue=True)
-            return
+            if self._ignore_callback_error:
+                return
+            raise
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
     def run(self):
