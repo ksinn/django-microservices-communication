@@ -3,7 +3,7 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(
-    name='services_communication',
+    name='django-microservices-communication',
     version='2.1.0',
     packages=find_packages(),
     url='https://github.com/ksinn/django-microservices-communication',
