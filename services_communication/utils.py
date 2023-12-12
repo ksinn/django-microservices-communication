@@ -1,4 +1,6 @@
 import json
+
+import django.db.utils
 from djangorestframework_camel_case.settings import api_settings as camel_case_api_settings
 from djangorestframework_camel_case import util
 
@@ -6,6 +8,10 @@ from services_communication.error import MessageNotConsumed
 from services_communication.logging import get_logger
 
 logger = get_logger('consumer')
+
+IGNORED_ERROR = (
+    django.db.utils.InterfaceError,
+)
 
 
 def underscoreize(data):
@@ -50,6 +56,8 @@ class MessageRouter:
         if handler:
             try:
                 handler(routing_key, underscoreize(json.loads(body)))
+            except IGNORED_ERROR:
+                raise
             except Exception as e:
                 logger.exception("Consumer '{}' raise error on message from exchange '{}' with routing rey '{}'".format(
                     handler.__name__,
