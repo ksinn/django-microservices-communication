@@ -3,7 +3,6 @@ import json
 from djangorestframework_camel_case.settings import api_settings as camel_case_api_settings
 from djangorestframework_camel_case import util
 
-from services_communication.settings import communication_settings
 from services_communication.error import MessageNotConsumed
 from services_communication.logging import get_logger
 
@@ -24,7 +23,8 @@ def camelize(data):
 
 class MessageRouter:
 
-    def __init__(self):
+    def __init__(self, ignored_errors):
+        self._ignored_errors = ignored_errors
         self._handlers = {}
         self._default_handler = None
 
@@ -52,7 +52,7 @@ class MessageRouter:
         if handler:
             try:
                 handler(routing_key, underscoreize(json.loads(body)))
-            except communication_settings.MESSAGE_CONSUMER_IGNORE_ERRORS:
+            except self._ignored_errors:
                 raise
             except Exception as e:
                 logger.exception("Consumer '{}' raise error on message from exchange '{}' with routing rey '{}'".format(
