@@ -4,10 +4,9 @@ from functools import wraps
 
 from django.utils.timezone import now
 
-from services_communication.settings import communication_settings
 from services_communication.utils import MessageRouter
 
-message_router = MessageRouter(communication_settings.MESSAGE_CONSUMER_IGNORE_ERRORS)
+message_router = MessageRouter()
 
 
 def event_consumer(f):
