@@ -48,9 +48,18 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
         'my-other-exchange',
     ],
     
-    'REST_API_HOST': 'http://api.example.com',
-    'REST_API_USERNAME': 'username',
-    'REST_API_PASSWORD': 'password',
+    'REST_API_HOST': 'http://api.example.com', 
+    'REST_API_AUTH_URL': 'api/v1/login',
+    
+    # Set auth request body
+    'REST_API_CREDENTIAL': {
+        'login': 'sarvar',
+        'password': 'sarvar',
+    },
+    
+    # Or username and password, if filed named as 'username' and 'password'
+    'REST_API_USERNAME': 'myusername',
+    'REST_API_PASSWORD': '12345',
 }
 ```
 Defaults:
