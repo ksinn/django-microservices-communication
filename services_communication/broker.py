@@ -1,10 +1,12 @@
+import logging
+
 import pika
 
 from services_communication.error import MessageNotConsumed
-from services_communication.logging import get_logger
 
-logger_publisher = get_logger('publisher')
-logger_consumer = get_logger('consumer')
+logger_consumer = logging.getLogger('services_communication.consumer')
+logger_publisher = logging.getLogger('services_communication.publisher')
+
 
 # class AsynchronousConsumer(object):
 #     """This is an example consumer that will handle unexpected interactions

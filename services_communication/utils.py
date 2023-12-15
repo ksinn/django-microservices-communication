@@ -1,13 +1,14 @@
 import json
+import logging
 
 import django.db.utils
 from djangorestframework_camel_case.settings import api_settings as camel_case_api_settings
 from djangorestframework_camel_case import util
 
 from services_communication.error import MessageNotConsumed
-from services_communication.logging import get_logger
 
-logger = get_logger('consumer')
+logger = logging.getLogger('services_communication.consumer')
+
 
 IGNORED_ERROR = (
     django.db.utils.InterfaceError,
