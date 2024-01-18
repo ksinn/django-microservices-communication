@@ -17,6 +17,7 @@ class AppServicesCommunicationConfig(AppConfig):
         from django.utils.module_loading import import_module
 
         loaded_consumers_module_count = 0
+        module_path = None
         for app in settings.INSTALLED_APPS:
             try:
                 module_path = app + '.consumers'
@@ -24,7 +25,9 @@ class AppServicesCommunicationConfig(AppConfig):
                 logger.info('Load consumers from %s' % module_path)
                 loaded_consumers_module_count += 1
             except ImportError as e:
-                pass
+                if e.name == module_path:
+                    continue
+                raise
         if not loaded_consumers_module_count:
             logger.warning('No one module with consumers not loaded')
             return
