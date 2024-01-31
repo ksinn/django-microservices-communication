@@ -26,8 +26,8 @@ def head(uri, request_formatter=json_request, **kwargs):
     return _request(uri, 'HEAD', request_formatter, full_response, **kwargs)
 
 
-def _request(uri, method, request_formatter, response_formatter, params={}, json=None, data=None, files=None, headers=None, no_auth=False, **kwargs):
-    url = build_url(uri, **kwargs)
+def _request(uri, method, request_formatter, response_formatter, params={}, json=None, data=None, files=None, headers=None, no_auth=False, extra_host=None, **kwargs):
+    url = build_url(uri, extra_host=extra_host)
 
     if headers is None:
         headers = {}
@@ -62,7 +62,7 @@ def _request(uri, method, request_formatter, response_formatter, params={}, json
     return response_formatter(response)
 
 
-def build_url(uri, extra_host=None, **kwargs):
+def build_url(uri, extra_host=None):
     host = extra_host if extra_host else API_HOST
     return f'{host}/{uri}'
 
