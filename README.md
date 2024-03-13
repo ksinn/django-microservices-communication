@@ -155,6 +155,7 @@ Publishing
 --------------
 
 *Publishing in transaction*
+
 For publish event happened with [aggregate](https://microservices.io/patterns/data/aggregate.html) in transaction use publish_aggregate_event
 ```python
 from services_communication.publisher import publish_aggregate_event
@@ -185,8 +186,9 @@ Then publisher process will read the event from the table and publish it to the 
 ```
 
 *Scheduling future event (in transaction)*
-Work the same as regular events, but you can specify a time (in the future) when the event will be sent.
 
+Work the same as regular events, but you can specify a time (in the future) when the event will be sent.
+Need _PUBLISHER_FUTURE_EVENT_ENABLE_ setting in True.
 ```python
 from services_communication.publisher import publish_future_aggregate_event, cancel_future_aggregate_event
 
