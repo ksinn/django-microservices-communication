@@ -32,7 +32,8 @@ DEFAULT = {
 
     'REST_API_HOST': 'http://localhost:8000',
     'REST_API_CREDENTIAL': None,  # {"username": "username", "password": "123456"}
-    'REST_API_AUTH_URL': None  # 'api/v1/auth',
+    'REST_API_AUTH_URL': None,  # 'api/v1/auth',
+    'PUBLISHER_FUTURE_EVENT_ENABLE': False,
 }
 
 Exchange = namedtuple("Exchange", ['name', 'type'])
@@ -51,6 +52,7 @@ class Settings:
     REST_API_HOST = None
     REST_API_CREDENTIAL = None
     REST_API_AUTH_URL = None
+    PUBLISHER_FUTURE_EVENT_ENABLE = None
 
     def __init__(self, default, user):
         if not user:
@@ -74,6 +76,7 @@ class Settings:
         self.REST_API_HOST = self.get_value("REST_API_HOST", default, user)
         self.REST_API_AUTH_URL = self.get_value("REST_API_AUTH_URL", default, user)
         self.REST_API_CREDENTIAL = self.get_rest_api_credential(default, user)
+        self.PUBLISHER_FUTURE_EVENT_ENABLE = self.get_value("PUBLISHER_FUTURE_EVENT_ENABLE", default, user)
 
     def build_bind(self, bind_settings):
         if isinstance(bind_settings, str):
