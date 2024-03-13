@@ -70,6 +70,9 @@ MICROSERVICES_COMMUNICATION_SETTINGS = {
     # Or username and password, if filed named as 'username' and 'password'
     'REST_API_USERNAME': 'myusername',
     'REST_API_PASSWORD': '12345',
+    
+    # Set True for use future event
+    'PUBLISHER_FUTURE_EVENT_ENABLE': False,
 }
 ```
 Defaults:
@@ -82,6 +85,12 @@ Defaults:
 
 Consuming
 ----------------
+
+Run consumer
+```commandline
+python manage.py runconsumer
+```
+
 Write logical consuming function in file 'consumers.py' in django app
 ```
 some_project/
@@ -139,10 +148,6 @@ def stupid_consume_function(payload, **kwargs):
     print(payload)
 ```
 
-Run consumer
-```commandline
-python manage.py runconsumer
-```
 
 Or user _devconsumer_ for auto reloading on change files
 
@@ -179,12 +184,44 @@ Then publisher process will read the event from the table and publish it to the 
 }
 ```
 
+*Scheduling future event (in transaction)*
+Work the same as regular events, but you can specify a time (in the future) when the event will be sent.
+
+```python
+from services_communication.publisher import publish_future_aggregate_event, cancel_future_aggregate_event
+
+
+def registrate_user(user):
+    ....
+    user.save()
+    
+    # remind the user to set a photo
+    publish_future_aggregate_event(
+        aggregate='user',
+        event_type='remind.photo',
+        event_time=now() + timedelta(seconds=delay),
+        payload=build_user_data(user),
+        tags={'user_id': user.id, 'any_other_tag': 'any_value'}
+        
+    )
+
+def set_user_photo(user, photo):
+    user.photo = photo
+    user.save()
+    
+    # cancel remind
+    cancel_future_aggregate_event(
+        aggregate='user',
+        event_type='remind.photo',
+        tags={'user_id': user.id}
+        
+    )
+```
 
 Run publisher process
 ```commandline
 python manage.py runpublisher
 ```
-
 
 Or user _devpublisher_ for auto reloading on change files
 
