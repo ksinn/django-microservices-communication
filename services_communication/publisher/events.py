@@ -30,7 +30,7 @@ def publish_aggregate_event(aggregate, event_type, payload):
 
 
 def publish_future_aggregate_event(aggregate, event_type, event_time, payload, tags=None):
-    assert is_future_event_enabled(), "Publishing of future event not enabled in settings!"
+    assert is_future_event_enabled(), "Publishing of future event not enabled in settings! Set PUBLISHER_FUTURE_EVENT_ENABLE to True"
     add_event_in_queue(
         aggregate, event_type, event_time,
         payload,
@@ -39,7 +39,7 @@ def publish_future_aggregate_event(aggregate, event_type, event_time, payload, t
 
 
 def cancel_future_aggregate_event(aggregate, event_type, tags):
-    assert is_future_event_enabled(), "Publishing of future event not enabled in settings!"
+    assert is_future_event_enabled(), "Publishing of future event not enabled in settings! Set PUBLISHER_FUTURE_EVENT_ENABLE to True"
     assert tags, "Tags cant not be empty for canceling future event"
 
     norm_tags = normalize_tags(tags)
@@ -58,4 +58,4 @@ def normalize_tags(tags):
     if not tags:
         return None
 
-    return {k: str(v) for k, v in tags.items}
+    return {k: str(v) for k, v in tags.items()}

@@ -187,8 +187,10 @@ Then publisher process will read the event from the table and publish it to the 
 
 *Scheduling future event (in transaction)*
 
-Work the same as regular events, but you can specify a time (in the future) when the event will be sent.
+Work the same as regular events, but you can specify a time (in the future) when the event will be sent. 
+Tags can be used to later cancel an event. Tag values are cast to string and value 1 equals '1', but not equals True!
 Need _PUBLISHER_FUTURE_EVENT_ENABLE_ setting in True.
+
 ```python
 from services_communication.publisher import publish_future_aggregate_event, cancel_future_aggregate_event
 
