@@ -296,3 +296,48 @@ By default:
 - get, post, delete methods return response.json
 - head method return full response
 
+
+Versions
+-------------
+* 2.4.x
+
+2.4.1 - Fix: add pytz requirements
+
+2.4.0 - Add future events
+
+* 2.3.x
+
+2.3.7 - Fix: add pytz requirements
+
+2.3.6 - Add extra host param for rest api
+
+2.3.5 - Fix loading module with consumers
+
+2.3.4 - Fix logging configration
+
+2.3.3 - Fix consumer: down on db connection error
+
+2.3.1 - Allow set broker connection parameters as dict in settings
+
+
+* 2.2.x
+
+2.2.5 - Fix: add pytz requirements
+
+2.2.4 - Fix loading module with consumers
+
+2.2.3 - Fix consumer: down on db connection error
+
+* 2.1.x
+
+2.1.5 - Fix: add pytz requirements
+
+2.1.4 - Allow set rest api auth credentials and url in settings
+
+2.1.3 - Fix loading module with consumers
+
+2.1.2 - Fix consumer: down on db connection error
+
+2.1.1 - Fix api error handling
+
+2.1.0 - Any fix in consuming
