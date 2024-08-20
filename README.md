@@ -307,7 +307,7 @@ Versions
 
 * 2.3.x
 
-2.3.7 - Fix: add pytz requirements
+2.3.8 - Fix: add pytz requirements
 
 2.3.6 - Add extra host param for rest api
 
