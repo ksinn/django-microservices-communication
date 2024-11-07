@@ -301,7 +301,7 @@ Versions
 -------------
 * 2.4.x
 
-2.4.2 - Add put and patch api helper methods
+2.4.3 - Add put and patch api helper methods
 
 2.4.1 - Fix: add pytz requirements
 
