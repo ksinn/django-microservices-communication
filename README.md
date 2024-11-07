@@ -301,6 +301,8 @@ Versions
 -------------
 * 2.4.x
 
+2.4.2 - Add put and patch api helper methods
+
 2.4.1 - Fix: add pytz requirements
 
 2.4.0 - Add future events
@@ -329,6 +331,8 @@ Versions
 2.2.3 - Fix consumer: down on db connection error
 
 * 2.1.x
+
+2.1.6 - Add put and patch api helper methods
 
 2.1.5 - Fix: add pytz requirements
 
