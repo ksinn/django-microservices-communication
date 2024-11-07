@@ -332,7 +332,7 @@ Versions
 
 * 2.1.x
 
-2.1.6 - Add put and patch api helper methods
+2.1.7 - Add put and patch api helper methods
 
 2.1.5 - Fix: add pytz requirements
 
