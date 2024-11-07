@@ -18,6 +18,14 @@ def post(uri, request_formatter=json_request, response_formatter=json_response, 
     return _request(uri, 'POST', request_formatter, response_formatter, **kwargs)
 
 
+def put(uri, request_formatter=json_request, response_formatter=json_response, **kwargs):
+    return _request(uri, 'PUT', request_formatter, response_formatter, **kwargs)
+
+
+def patch(uri, request_formatter=json_request, response_formatter=json_response, **kwargs):
+    return _request(uri, 'PATCH', request_formatter, response_formatter, **kwargs)
+
+
 def delete(uri, request_formatter=json_request, response_formatter=full_response, **kwargs):
     return _request(uri, 'DELETE', request_formatter, response_formatter, **kwargs)
 
