@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from services_communication.consumer.process import run_consumer
+from services_communication.process import run_consumer
 from services_communication.consumer import message_router
 
 import logging

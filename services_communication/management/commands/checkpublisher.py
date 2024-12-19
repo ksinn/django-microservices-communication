@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand, CommandError
-from services_communication.publisher.process import is_publisher_work
+from services_communication.process import is_publisher_work
 
 import logging
 

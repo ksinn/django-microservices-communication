@@ -299,6 +299,10 @@ By default:
 
 Versions
 -------------
+* 2.5.x
+
+2.5.0 - Atomic sending command
+
 * 2.4.x
 
 2.4.3 - Add put and patch api helper methods

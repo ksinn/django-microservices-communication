@@ -4,7 +4,7 @@ from datetime import timedelta
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.timezone import now
 
-from services_communication.publisher.utils import build_publisher_by_settings
+from services_communication.process.publisher import build_publisher_by_settings
 from services_communication.utils import camelize
 
 

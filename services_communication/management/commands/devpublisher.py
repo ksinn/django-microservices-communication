@@ -1,7 +1,7 @@
 from django.core.management import BaseCommand
 from django.utils import autoreload
 
-from services_communication.publisher.process import run_publisher
+from services_communication.process import run_publisher
 
 import logging
 logging.basicConfig(level=logging.WARNING)
