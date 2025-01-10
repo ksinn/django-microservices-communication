@@ -7,7 +7,8 @@ from django.utils.timezone import now
 
 from services_communication.utils import camelize
 from services_communication import publishing_backend
-from services_communication.defaults import message_router
+from services_communication.defaults import message_router as _message_router
+message_router = _message_router
 
 
 def event_consumer(f):
