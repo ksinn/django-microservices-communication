@@ -14,7 +14,6 @@ def run_publisher():
     publisher = _get_publisher()
     while True:
         for message in publishing_backend.get_messages_for_send_to_broker():
-            print(message)
             if message.is_new_style:
                 publisher.publish(
                     exchange=message.exchange,

@@ -95,7 +95,7 @@ def call_response_consumer(f):
         request_meta = message_body.pop('meta', {})
         request_data = message_body.pop('data', {})
 
-        _, service_name, method_name = routing_key.split('.')
+        _, service_name, method_name = routing_key.split('.', 2)
 
         response = f(request_data, *args, service_name=service_name, method_name=method_name, call_id=call_id, meta=request_meta, **kwargs)
     return wrapper
