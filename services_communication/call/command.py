@@ -8,11 +8,17 @@ from services_communication.process.publisher import build_publisher_by_settings
 from services_communication.utils import camelize
 
 
-def send_command(service_name, arguments, command_name='', timeout=None):
+def send_command(service_name, arguments, command_name='', timeout=None, expired_time=None):
+    assert not (timeout and expired_time), "Ambiguous timeout! Use timeout or expired_time, not both"
+    assert expired_time is None or expired_time > now(), "expired_time in past!"
+
     meta = {}
 
     if timeout:
-        meta['expired_time'] = now() + timedelta(seconds=timeout)
+        expired_time = now() + timedelta(seconds=timeout)
+
+    if expired_time:
+        meta['expired_time'] = expired_time
 
     arguments['meta'] = meta
 

@@ -301,6 +301,8 @@ Versions
 -------------
 * 2.5.x
 
+2.5.1 - Add timeout as datetime for command and call
+
 2.5.0 - Atomic sending command
 
 * 2.4.x
