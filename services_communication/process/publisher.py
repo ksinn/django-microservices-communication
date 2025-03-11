@@ -1,7 +1,15 @@
+import logging
+import select
 import json
 import time
 from datetime import timedelta
 
+try:
+    import psycopg2
+except ImportError:
+    pass
+
+from django.conf import settings
 from django.utils.timezone import now
 
 from services_communication import publishing_backend
@@ -9,32 +17,13 @@ from services_communication.broker import BlockedPublisher
 from services_communication.settings import communication_settings
 
 
+logger = logging.getLogger('services_communication.publisher.process')
+
+
 def run_publisher():
     _check_publisher_settings()
     publisher = _get_publisher()
-    while True:
-        for message in publishing_backend.get_messages_for_send_to_broker():
-            if message.is_new_style:
-                publisher.publish(
-                    exchange=message.exchange,
-                    routing_key=message.routing_key,
-                    body=json.dumps(message.body),
-                )
-            else:
-                publisher.publish(
-                    exchange=message.exchange,
-                    routing_key=message.routing_key,
-                    body=json.dumps({
-                        'eventId': message.id,
-                        'eventTime': message.event_time.isoformat(),
-                        'eventType': message.event_type,
-                        'aggregate': message.aggregate,
-                        'payload': message.payload,
-
-                    }),
-                )
-            publishing_backend.delete(message)
-        time.sleep(1)
+    publisher.run()
 
 
 def is_publisher_work(max_queue_size=0, max_delay=15):
@@ -49,12 +38,10 @@ def _get_publisher():
 
 
 def _check_publisher_settings():
-    pass
-
-def build_publisher_by_settings():
     assert communication_settings.BROKER_CONNECTION_PARAMETERS, 'Broker connection not set!'
 
-    return BlockedPublisher(
+def build_publisher_by_settings():
+    return communication_settings.MESSAGE_PUBLISHER_QUEUE_HANDLER_CLASS(
         app_id=communication_settings.APP_ID,
         broker_connection_parameters=communication_settings.BROKER_CONNECTION_PARAMETERS,
         exchanges=communication_settings.EXCHANGES,

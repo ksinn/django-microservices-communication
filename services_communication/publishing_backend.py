@@ -1,3 +1,4 @@
+from django.db import connections
 from django.db.models import Q
 from django.utils.timezone import now
 
@@ -29,3 +30,42 @@ def delete(message):
 
 def delete_by_tags_subset(exchange, routing_key, tags):
     PublishedEventQueue.objects.filter(exchange=exchange, routing_key=routing_key, tags__contains=tags).delete()
+
+
+def get_db_alias():
+    return PublishedEventQueue.objects.db
+
+
+def get_scheme_and_tabel_name():
+    table = PublishedEventQueue._meta.db_table
+
+    connection = connections[get_db_alias()]
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SHOW search_path;""",
+        )
+
+        search_path = cursor.fetchone()[0]
+        if not search_path:
+            raise Exception('Database search_path is empty!')
+
+        search_path_schemes = search_path.split(',')
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """SELECT table_schema FROM information_schema.tables WHERE table_name = %s AND table_schema = ANY(%s);""",
+            (table, search_path_schemes),
+        )
+
+        schemes_has_tabel = set(row[0] for row in cursor.fetchall())
+
+    schema = None
+    for available_scheme in search_path_schemes:
+        if available_scheme in schemes_has_tabel:
+            schema = available_scheme
+            break
+
+    if not schema:
+        raise Exception('Not found db schema used for tabel {}!'.format(table))
+
+    return schema, table

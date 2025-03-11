@@ -229,6 +229,20 @@ python manage.py runpublisher
 
 Or user _devpublisher_ for auto reloading on change files
 
+There are two types of receiving updates from the DB event table available to the publisher process:
+- Pooling
+- Listening (Default, Only for PostgreSQL) 
+
+Pooling is a while True loop that fetches a new row from the table every second. Use setting
+```
+MICROSERVICES_COMMUNICATION_SETTINGS = {
+    ...
+    'MESSAGE_PUBLISHER_QUEUE_HANDLER_CLASS': 'services_communication.publisher.queue_handler.SyncPoolingPublisherQueueHandler',
+    ...
+```
+
+Listening is [asynchronous](https://www.psycopg.org/docs/advanced.html#asynchronous-support) connection to the DB that [listens](https://www.postgresql.org/docs/current/sql-listen.html) a chanel. Each insert into the event table will notify the channel via a trigger. 
+
 Commands
 --------------
 A command is a way of telling remote service to do something without waiting for a response from it.
@@ -299,6 +313,11 @@ By default:
 
 Versions
 -------------
+* 2.6.x
+
+2.6.0 - Add tow type of publisher: pooling and LISTEN/NOTIFY
+
+
 * 2.5.x
 
 2.5.1 - Add timeout as datetime for command and call
