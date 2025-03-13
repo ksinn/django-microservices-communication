@@ -315,6 +315,8 @@ Versions
 -------------
 * 2.6.x
 
+2.6.1 - Fix: make LISTEN/NOTIFY chanel name shorter
+
 2.6.0 - Add tow type of publisher: pooling and LISTEN/NOTIFY
 
 

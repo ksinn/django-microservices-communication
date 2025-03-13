@@ -64,7 +64,7 @@ class ListenPublisherQueueHandler:
         db_dsn = build_settings_to_url(db_settings)
 
         scheme, tabel = publishing_backend.get_scheme_and_tabel_name()
-        self.chanel_name = f"new_{scheme}_{tabel}"
+        self.chanel_name = f"{scheme}_eventqueued"
 
         self.mq = BlockedPublisher(
             app_id=app_id,
