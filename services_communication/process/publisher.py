@@ -1,19 +1,9 @@
 import logging
-import select
-import json
-import time
 from datetime import timedelta
 
-try:
-    import psycopg2
-except ImportError:
-    pass
-
-from django.conf import settings
 from django.utils.timezone import now
 
 from services_communication import publishing_backend
-from services_communication.broker import BlockedPublisher
 from services_communication.settings import communication_settings
 
 

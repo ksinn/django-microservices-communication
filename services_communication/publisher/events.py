@@ -2,6 +2,7 @@ from django.utils.timezone import now
 
 from services_communication.utils import camelize
 from services_communication import publishing_backend
+from services_communication.settings import communication_settings
 
 
 
@@ -38,6 +39,8 @@ def publish_aggregate_event(aggregate, event_type, payload):
 
 
 def publish_future_aggregate_event(aggregate, event_type, event_time, payload, tags=None):
+    assert communication_settings.PUBLISHER_FUTURE_EVENT_ENABLE, 'Publishing of future event not enabled in settings! Set PUBLISHER_FUTURE_EVENT_ENABLE to True'
+
     _add_event_in_queue(
         aggregate, event_type, event_time,
         payload,

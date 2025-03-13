@@ -10,6 +10,9 @@ class AppServicesCommunicationConfig(AppConfig):
     name = 'services_communication'
 
     def ready(self):
+        from services_communication.settings import communication_settings
+        communication_settings._setup()
+
         self.load_registered_consumers()
 
     def load_registered_consumers(self):

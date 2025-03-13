@@ -11,6 +11,7 @@ except ImportError:
 from django.conf import settings
 
 from services_communication import publishing_backend
+from services_communication.settings import communication_settings
 from services_communication.broker import BlockedPublisher
 
 
@@ -57,6 +58,7 @@ class ListenPublisherQueueHandler:
 
     def __init__(self, app_id=None, broker_connection_parameters=None, exchanges=None, **kwargs):
         assert psycopg2, 'ListenPublisher work by NOTIFY/LISTEN and available only for PostgreSQL and required "psycopg2"'
+        assert not communication_settings.PUBLISHER_FUTURE_EVENT_ENABLE, 'ListenPublisher can\'t handel with future event yet'
 
         db_settings = settings.DATABASES[publishing_backend.get_db_alias()]
         if "postgresql" not in db_settings["ENGINE"]:

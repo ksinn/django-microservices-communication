@@ -1,6 +1,9 @@
 import logging
+import random
+from datetime import time
 
 import pika
+from pika.exceptions import AMQPConnectionError
 
 from services_communication.error import MessageNotConsumed
 
@@ -492,7 +495,7 @@ class BlockedConsumer(BlockedMixin):
                  on_message_callback=None,
                  ignore_callback_error=False,
                  **kwargs):
-        logger_consumer.debug('Init BlockedConsumer with callback {}'.format(on_message_callback))
+        logger_consumer.info('Init {} with callback {}'.format(type(self).__name__, on_message_callback))
         self._broker_connection_parameters = broker_connection_parameters
         self._queue = queue
         self._exchanges = exchanges
@@ -518,42 +521,90 @@ class BlockedConsumer(BlockedMixin):
             raise
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
+    def declair(self, channel):
+        self._declare_queue(channel)
+        self._declare_exchanges(channel)
+        self._declare_binds(channel)
+
     def run(self):
-        # while (True):
-        #     try:
         try:
                 logger_consumer.debug("Connect to rabbit")
                 with pika.BlockingConnection(parameters=self._broker_connection_parameters) as connection:
                     logger_consumer.debug("Open channel")
                     with connection.channel() as channel:
                         # channel.basic_qos(prefetch_count=15)
-                        self._declare_queue(channel)
-                        self._declare_exchanges(channel)
-                        self._declare_binds(channel)
+                        self.declair(channel)
 
                         channel.basic_consume(self._queue, self.on_message)
                         try:
                             logger_consumer.debug("Starting consuming")
                             channel.start_consuming()
                         except KeyboardInterrupt:
+                            logger_consumer.info("Consuming interrupted")
                             channel.stop_consuming()
-                            connection.close()
-        except Exception as err:
+        except Exception:
             logger_consumer.exception("Error happened in consumer")
-                    # break
-            # except pika.exceptions.ConnectionClosedByBroker:
-            #     # Uncomment this to make the example not attempt recovery
-            #     # from server-initiated connection closure, including
-            #     # when the node is stopped cleanly
-            #     #
-            #     # break
-            #     continue
-            # # Do not recover on channel errors
-            # except pika.exceptions.AMQPChannelError as err:
-            #     break
-            # # Recover on all other connection errors
-            # except pika.exceptions.AMQPConnectionError:
-            #     continue
+
+
+class BlockedReconnectingConsumer(BlockedConsumer):
+
+    def __init__(self,
+                 **kwargs):
+        super().__init__(**kwargs)
+        self.max_reconnect_attempts = 3
+        self.max_total_reconnect_attempts = self.max_reconnect_attempts * 5
+        self.total_reconnect_attempts = 0
+        self.is_declared = False
+
+    def on_message(self, *args, **kwargs):
+        self.total_reconnect_attempts = 0
+        super().on_message(*args, **kwargs)
+
+    def declair(self, channel):
+        if not self.is_declared:
+            super().declair(channel)
+            self.is_declared = True
+
+    def reconnect_pause_random_gen(self):
+        yield random.randint(3, 8)
+
+    def run(self):
+        self.total_reconnect_attempts = 0
+        reconnect_attempts = self.max_reconnect_attempts
+
+        while True:
+            try:
+                    logger_consumer.info("Connect to rabbit")
+                    with pika.BlockingConnection(parameters=self._broker_connection_parameters) as connection:
+                        logger_consumer.info("Open channel")
+                        with connection.channel() as channel:
+                            reconnect_attempts = 0
+                            # channel.basic_qos(prefetch_count=15)
+                            self.declair(channel)
+
+                            channel.basic_consume(self._queue, self.on_message)
+                            try:
+                                logger_consumer.info("Starting consuming")
+                                channel.start_consuming()
+                            except KeyboardInterrupt:
+                                logger_consumer.info("Consuming interrupted")
+                                channel.stop_consuming()
+                                break
+            except AMQPConnectionError as err:
+                logger_consumer.error("Connection error on %s attempt: %s", reconnect_attempts, err)
+                self.total_reconnect_attempts = self.total_reconnect_attempts + 1
+                reconnect_attempts = reconnect_attempts + 1
+                allow_reconnect = reconnect_attempts <= self.max_reconnect_attempts and self.total_reconnect_attempts <= self.max_total_reconnect_attempts
+                if allow_reconnect:
+                    pause = next(self.reconnect_pause_random_gen())
+                    logger_consumer.info('Await {} before reconnect attempt'.format(pause))
+                    time.sleep(pause)
+                else:
+                    logger_consumer.exception("Can not connect to broker")
+                    break
+            except Exception as err:
+                logger_consumer.exception("Error happened in consumer")
+                break
 
 
 class BlockedPublisher(BlockedMixin):

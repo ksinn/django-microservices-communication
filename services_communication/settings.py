@@ -4,6 +4,7 @@ from typing import Tuple
 
 import pika
 from django.conf import settings
+from django.utils.functional import LazyObject
 from django.utils.module_loading import import_string
 from pika.exchange_type import ExchangeType
 
@@ -108,6 +109,11 @@ class Settings:
     def get_value(self, key, default, user):
         if key in user:
             return user[key]
+
+
+        if hasattr(settings, f'MICROSERVICES_COMMUNICATION_SETTING_{key}'):
+            return getattr(settings, f'MICROSERVICES_COMMUNICATION_SETTING_{key}')
+
         return default[key]
 
     def get_django_project_name(self):
@@ -151,4 +157,9 @@ class Settings:
         return pika.ConnectionParameters(**prepared_parameters)
 
 
-communication_settings = Settings(DEFAULT, getattr(settings, 'MICROSERVICES_COMMUNICATION_SETTINGS', None))
+class LazySettings(LazyObject):
+
+    def _setup(self):
+        self._wrapped = Settings(DEFAULT, getattr(settings, 'MICROSERVICES_COMMUNICATION_SETTINGS', None))
+
+communication_settings = LazySettings()
