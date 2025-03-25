@@ -3,7 +3,7 @@ from services_communication.process import run_consumer
 from services_communication.consumer import message_router
 
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 
 class Command(BaseCommand):

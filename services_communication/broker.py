@@ -4,8 +4,11 @@ from datetime import time
 
 import pika
 from pika.exceptions import AMQPConnectionError
+from pika.exchange_type import ExchangeType
 
 from services_communication.error import MessageNotConsumed
+from services_communication.settings import communication_settings
+from services_communication.types import Exchange
 
 logger_consumer = logging.getLogger('services_communication.consumer')
 logger_publisher = logging.getLogger('services_communication.publisher')
@@ -674,3 +677,25 @@ class BlockedPublisher(BlockedMixin):
         self._channel = None
         self._connection = None
         self._publish(*args, **kwargs)
+
+
+class OneMessagePublisher(BlockedPublisher):
+
+    def publish(self, exchange, *args, **kwargs):
+        self._exchanges = [Exchange(exchange, ExchangeType.topic)]
+
+        self._publish(exchange, *args, **kwargs)
+
+        if self._channel and self._channel.is_open:
+            self._channel.close()
+        if self._connection and self._connection.is_open:
+            self._connection.close()
+
+
+
+def build_publisher_by_settings(publisher_class):
+    return publisher_class(
+        app_id=communication_settings.APP_ID,
+        broker_connection_parameters=communication_settings.BROKER_CONNECTION_PARAMETERS,
+        exchanges=communication_settings.EXCHANGES,
+    )

@@ -1,5 +1,4 @@
 import os
-from collections import namedtuple
 from typing import Tuple
 
 import pika
@@ -7,6 +6,8 @@ from django.conf import settings
 from django.utils.functional import LazyObject
 from django.utils.module_loading import import_string
 from pika.exchange_type import ExchangeType
+
+from .types import Bind, Exchange
 
 DEFAULT = {
     'LOG_LEVEL': 'ERROR',
@@ -37,9 +38,6 @@ DEFAULT = {
     'REST_API_AUTH_URL': None,  # 'api/v1/auth',
     'PUBLISHER_FUTURE_EVENT_ENABLE': False,
 }
-
-Exchange = namedtuple("Exchange", ['name', 'type'])
-Bind = namedtuple("Bind", ['exchange', 'routing_key'])
 
 
 class Settings:

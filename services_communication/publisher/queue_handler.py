@@ -12,7 +12,7 @@ from django.conf import settings
 
 from services_communication import publishing_backend
 from services_communication.settings import communication_settings
-from services_communication.broker import BlockedPublisher
+from services_communication.broker import build_publisher_by_settings, BlockedPublisher
 
 
 logger = logging.getLogger('services_communication.publisher.process')
@@ -20,12 +20,8 @@ logger = logging.getLogger('services_communication.publisher.process')
 
 class SyncPoolingPublisherQueueHandler:
 
-    def __init__(self, app_id=None, broker_connection_parameters=None, exchanges=None, **kwargs):
-        self.mq = BlockedPublisher(
-            app_id=app_id,
-            broker_connection_parameters=broker_connection_parameters,
-            exchanges=exchanges,
-        )
+    def __init__(self, **kwargs):
+        self.mq = build_publisher_by_settings(BlockedPublisher)
 
     def run(self):
         while True:
@@ -56,7 +52,7 @@ class ListenPublisherQueueHandler:
 
     notification_select_timeout = 15
 
-    def __init__(self, app_id=None, broker_connection_parameters=None, exchanges=None, **kwargs):
+    def __init__(self, **kwargs):
         assert psycopg2, 'ListenPublisher work by NOTIFY/LISTEN and available only for PostgreSQL and required "psycopg2"'
         assert not communication_settings.PUBLISHER_FUTURE_EVENT_ENABLE, 'ListenPublisher can\'t handel with future event yet'
 
@@ -68,11 +64,7 @@ class ListenPublisherQueueHandler:
         scheme, tabel = publishing_backend.get_scheme_and_tabel_name()
         self.chanel_name = f"{scheme}_eventqueued"
 
-        self.mq = BlockedPublisher(
-            app_id=app_id,
-            broker_connection_parameters=broker_connection_parameters,
-            exchanges=exchanges,
-        )
+        self.mq = build_publisher_by_settings(BlockedPublisher)
 
         self.conn = psycopg2.connect(db_dsn, **{'async': 1})
         self.wait()
