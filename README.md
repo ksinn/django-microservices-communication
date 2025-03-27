@@ -315,6 +315,8 @@ Versions
 -------------
 * 2.6.x
 
+2.6.4 - Add check_expired_time_after_handel for call_consumer
+
 2.6.3 - Fix command publishing
 
 2.6.2 - Add reconnecting consumer, new configuration way
