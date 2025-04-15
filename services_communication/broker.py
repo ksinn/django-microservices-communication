@@ -1,6 +1,6 @@
 import logging
 import random
-from datetime import time
+import time
 
 import pika
 from pika.exceptions import AMQPConnectionError
