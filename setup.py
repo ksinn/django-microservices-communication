@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    version='2.6.5',
+    version='2.6.6',
     name='django-microservices-communication',
     packages=find_packages(),
     url='https://github.com/ksinn/django-microservices-communication',

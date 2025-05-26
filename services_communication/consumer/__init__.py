@@ -46,9 +46,8 @@ def command_consumer(f):
 
 
 
-def call_consumer(func=None, *, check_expired_time_after_handel=None):
+def call_consumer(func=None, *, no_atomic=False, check_expired_time_after_handel=None):
     def decorator(f):
-        @atomic
         @wraps(f)
         def wrapper(routing_key, message_body, *args, exchange=None, **kwargs):
             call_id = message_body['id']
@@ -95,7 +94,9 @@ def call_consumer(func=None, *, check_expired_time_after_handel=None):
             )
             return
 
-        return wrapper
+        if no_atomic:
+            return wrapper
+        return atomic(wrapper)
 
     if func and callable(func):
         return decorator(func)
