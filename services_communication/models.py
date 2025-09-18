@@ -20,6 +20,8 @@ class PublishedEventQueue(models.Model):
     send_after_time = models.DateTimeField(null=True)
     tags = models.JSONField(null=True)
 
+    properties = models.JSONField(null=True)
+
     @classmethod
     def get_next_id_value(cls):
         with connection.cursor() as cursor:

@@ -1,8 +1,9 @@
+import logging
+
 from django.core.management import BaseCommand
 from services_communication.process import run_publisher
 
-import logging
-logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger('services_communication.publisher')
 
 
 class Command(BaseCommand):

@@ -31,6 +31,7 @@ class SyncPoolingPublisherQueueHandler:
                         exchange=message.exchange,
                         routing_key=message.routing_key,
                         body=json.dumps(message.body),
+                        correlation_id=message.properties.get('correlation_id') if message.properties else None,
                     )
                 else:
                     self.mq.publish(
@@ -76,6 +77,7 @@ class ListenPublisherQueueHandler:
                     exchange=message.exchange,
                     routing_key=message.routing_key,
                     body=json.dumps(message.body),
+                    correlation_id=message.properties.get('correlation_id') if message.properties else None,
                 )
             else:
                 self.mq.publish(

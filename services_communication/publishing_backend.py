@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.utils.timezone import now
 
 from services_communication.models import PublishedEventQueue
+from services_communication.settings import communication_settings
 
 
 def get_messages_for_send_to_broker():
@@ -21,6 +22,9 @@ def save_message(id, exchange, routing_key, send_after_time, body, tags):
         body=body,
         is_new_style=True,
         tags=tags,
+        properties=dict(
+            correlation_id=communication_settings.CORRELATION_ID_HELPER.get_correlation_id(),
+        )
     )
 
 

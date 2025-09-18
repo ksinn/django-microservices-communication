@@ -1,10 +1,11 @@
+import logging
+
 from django.core.management import BaseCommand
 from services_communication.process import run_consumer
 
-import logging
-logging.basicConfig(level=logging.WARNING)
 from django.utils import autoreload
 
+logger = logging.getLogger('services_communication.consumer')
 
 class Command(BaseCommand):
     help = "Run dev consumer"

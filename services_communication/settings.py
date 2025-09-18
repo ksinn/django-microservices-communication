@@ -37,6 +37,8 @@ DEFAULT = {
     'REST_API_CREDENTIAL': None,  # {"username": "username", "password": "123456"}
     'REST_API_AUTH_URL': None,  # 'api/v1/auth',
     'PUBLISHER_FUTURE_EVENT_ENABLE': False,
+
+    'CORRELATION_ID_HELPER_CLASS': None,
 }
 
 
@@ -54,6 +56,7 @@ class Settings:
     REST_API_CREDENTIAL = None
     REST_API_AUTH_URL = None
     PUBLISHER_FUTURE_EVENT_ENABLE = None
+    CORRELATION_ID_HELPER = None
 
     def __init__(self, default, user):
         if not user:
@@ -80,6 +83,8 @@ class Settings:
         self.REST_API_AUTH_URL = self.get_value("REST_API_AUTH_URL", default, user)
         self.REST_API_CREDENTIAL = self.get_rest_api_credential(default, user)
         self.PUBLISHER_FUTURE_EVENT_ENABLE = self.get_value("PUBLISHER_FUTURE_EVENT_ENABLE", default, user)
+
+        self.CORRELATION_ID_HELPER = self.get_correlation_id_helper(default, user)
 
     def build_bind(self, bind_settings):
         if isinstance(bind_settings, str):
@@ -153,6 +158,13 @@ class Settings:
             prepared_parameters['credentials'] = pika.PlainCredentials(username, password)
 
         return pika.ConnectionParameters(**prepared_parameters)
+
+    def get_correlation_id_helper(self, default, user):
+        value = self.get_value("CORRELATION_ID_HELPER_CLASS", default, user)
+        if not value:
+            value = 'services_communication.utils.DefaultCorrelationIdHelper'
+        return import_string(value)()
+
 
 
 class LazySettings(LazyObject):

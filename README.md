@@ -315,6 +315,8 @@ Versions
 -------------
 * 2.6.x
 
+2.6.7 - Add correlation_id
+
 2.6.6 - Add no-atomic call consumer
 
 2.6.5 - Fix import error
