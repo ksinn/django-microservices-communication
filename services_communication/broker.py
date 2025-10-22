@@ -17,13 +17,19 @@ logger_publisher = logging.getLogger('services_communication.publisher')
 class BlockedMixin:
 
     def _declare_queue(self, channel):
+        if communication_settings.DO_NOT_DECLARE:
+            return
         channel.queue_declare(self._queue, durable=True)
 
     def _declare_exchanges(self, channel):
+        if communication_settings.DO_NOT_DECLARE:
+            return
         for exchange in self._exchanges:
             channel.exchange_declare(exchange.name, exchange_type=exchange.type, durable=True)
 
     def _declare_binds(self, channel):
+        if communication_settings.DO_NOT_DECLARE:
+            return
         for bind in self._binds:
             channel.queue_bind(self._queue, bind.exchange, routing_key=bind.routing_key)
 

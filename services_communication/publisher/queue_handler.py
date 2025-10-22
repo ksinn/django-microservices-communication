@@ -2,6 +2,7 @@ import logging
 import select
 import json
 import time
+from urllib.parse import quote_plus
 
 try:
     import psycopg2
@@ -171,5 +172,5 @@ class ListenPublisherQueueHandler:
 
 
 def build_settings_to_url(db_settings):
-    DATABASE_URL = f"postgresql://{db_settings['USER']}:{db_settings['PASSWORD']}@{db_settings['HOST']}:{db_settings['PORT']}/{db_settings['NAME']}"
+    DATABASE_URL = f"postgresql://{quote_plus(db_settings['USER'])}:{quote_plus(db_settings['PASSWORD'])}@{db_settings['HOST']}:{db_settings['PORT']}/{db_settings['NAME']}"
     return DATABASE_URL

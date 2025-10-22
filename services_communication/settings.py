@@ -22,6 +22,7 @@ DEFAULT = {
     #     'password': 'guest',
     #     'credentials': pika.PlainCredentials('guest', 'guest')
     # },
+    'DO_NOT_DECLARE': False,  # The application will not attempt to declare queues, exchanges, and binds. This is expected to be provided by another method.
     'QUEUE': '',  # The AMQP queue for consume'
     'EXCHANGES': [
     ],  # The AMQP exchanges for publisher or consumer binds. String or tuple of name and type
@@ -46,6 +47,7 @@ class Settings:
     LOG_LEVEL = None
     APP_ID = None
     BROKER_CONNECTION_PARAMETERS: pika.connection.Parameters = None
+    DO_NOT_DECLARE = False
     QUEUE: str = None
     EXCHANGES: Tuple[Exchange] = None
     BINDS: Tuple[Bind] = None
@@ -63,6 +65,7 @@ class Settings:
             user = {}
 
         self.BROKER_CONNECTION_PARAMETERS = self.get_broker_connection_parameters(default, user)
+        self.DO_NOT_DECLARE = self.get_value("DO_NOT_DECLARE", default, user)
         self.QUEUE = self.get_value("QUEUE", default, user)
         self.MESSAGE_CONSUMER = import_string(self.get_value("MESSAGE_CONSUMER", default, user))
         self.CONSUMER_CLASS = import_string(self.get_value("CONSUMER_CLASS", default, user))
